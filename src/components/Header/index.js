@@ -11,7 +11,7 @@ class Header extends Component {
     componentDidMount() {
         console.log(this.props);
     }
-    
+
     go(route) {
         const { history } = this.props;
         if (route) {
@@ -25,12 +25,12 @@ class Header extends Component {
     render() {
         return (
             <div>
-                <span onClick={() => {this.go()}}>Header</span>
+                <span onClick={() => { this.go() }}>Header</span>
                 <p>
-                    <Button onClick={() => {this.go('/user')}}>go user</Button>
+                    <Button onClick={() => { this.go('/user') }}>go user</Button>
                 </p>
                 <p>
-                    <Button onClick={() => {this.go('/department')}}>go depeartment</Button>
+                    <Button onClick={() => { this.go('/department') }}>go depeartment</Button>
                 </p>
             </div>
         )
