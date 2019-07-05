@@ -10,6 +10,7 @@ export const getSingleModel = () => {
                 loading: true,
             }
         });
+        let error = void 0;
         try {
             const model = await getModel();
             dispatch({
@@ -18,8 +19,10 @@ export const getSingleModel = () => {
                     model
                 }
             });
+            // return Promise.resolve('1')
         } catch(e) {
             message.error(e.message);
+            error = 1;
         } finally {
             dispatch({
                 type: TYPES.CHANGE_MODEL_LIST_LOADING,
@@ -27,6 +30,7 @@ export const getSingleModel = () => {
                     loading: false,
                 }
             });
+            return error ? Promise.reject() : Promise.resolve(12);
         }
     }
 }

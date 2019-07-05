@@ -16,8 +16,8 @@ class App extends Component {
     return (
       <Provider store={store}>
         <main className={styles.main}>
-          <Header />
           <Router>
+            <Header />
             <Route path="/" exact component={Home} />
             <Route path="/home" component={Home} />
           </Router>

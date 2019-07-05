@@ -10,12 +10,14 @@ class Home extends Component {
         // dispatch({
         //     type: 'home'
         // })
+        console.log(this.props);
     }
 
     handleClick = async () => {
-        const { dispatch, models } = this.props;
-        console.log(models);
-        dispatch(getSingleModel())
+        const { dispatch } = this.props;
+        // console.log(models);
+        const ddd = await dispatch(getSingleModel());
+        console.log(ddd);
     }
 
     render() {
