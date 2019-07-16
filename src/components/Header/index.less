@@ -1,0 +1,30 @@
+.app-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    background: #002140;
+    color: #ffffff;
+    height: 32px;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+
+    .title {
+        flex: 1;
+        line-height: 32px;
+        font-size: 14px;
+        font-weight: bolder;
+        padding-left: 10px;
+    }
+
+    .btns {
+        width: 100px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        
+        i {
+            cursor: pointer;
+            -webkit-app-region: no-drag;
+        }
+    }
+}
