@@ -17,10 +17,14 @@
   "build": {
     "appId": "com.znkf.teaching",
     "productName": "znkf_teaching",
-    "files": ["build_web/**/*", "package.json", "electron/*"],
+    "files": [
+      "build_web/**/*",
+      "package.json",
+      "electron/*"
+    ],
     "directories": {
       "output": "build_client"
-    }, 
+    },
     "mac": {
       "target": [
         "dmg",
@@ -37,22 +41,20 @@
   "dependencies": {
     "antd": "^3.20.0",
     "camelcase": "^5.2.0",
+    "is-wsl": "^1.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "less": "^3.9.0",
     "qs": "^6.7.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0",
-    "less": "^3.9.0",
-    "is-wsl": "^1.1.0",
-    "isomorphic-fetch": "^2.2.1"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
-    "electron": "^5.0.6",
-    "electron-builder": "^21.0.15",
-    "less-loader": "^5.0.0",
     "@babel/core": "7.4.3",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/plugin-transform-react-jsx-self": "^7.2.0",
     "@babel/plugin-transform-react-jsx-source": "^7.2.0",
@@ -68,6 +70,8 @@
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",
     "dotenv-expand": "4.2.0",
+    "electron": "^5.0.6",
+    "electron-builder": "^21.0.15",
     "eslint": "^5.16.0",
     "eslint-config-react-app": "^4.0.1",
     "eslint-loader": "2.1.2",
@@ -84,6 +88,7 @@
     "jest-environment-jsdom-fourteen": "0.1.0",
     "jest-resolve": "24.7.1",
     "jest-watch-typeahead": "0.3.0",
+    "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "0.5.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",
@@ -166,6 +171,14 @@
     ]
   },
   "babel": {
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ]
+    ],
     "presets": [
       "react-app"
     ]
