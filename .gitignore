@@ -12,6 +12,8 @@
 /build
 /dist
 /client
+/web_build
+/client_build
 
 # misc
 .DS_Store

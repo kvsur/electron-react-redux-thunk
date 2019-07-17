@@ -33,7 +33,7 @@ function createWindow() {
     // win.setMenu(null);
 
     // 加载index.html文件
-    win.loadFile('build/index.html');
+    win.loadFile('web_build/index.html');
 
     // 打开开发者工具
     // win.webContents.openDevTools();
