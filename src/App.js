@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import Router from '@/router-dom';
 // import Header from '@/components/Header';
-import Home from '@/pages/Home';
+import Login from '@/pages/Login';
 import store from '@/store';
 
 import history from '@/router-dom/history';
@@ -12,6 +12,8 @@ import history from '@/router-dom/history';
 
 import styles from '@/App.less';
 import Header from '@/components/Header';
+
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 class App extends Component {
   state = {};
@@ -21,9 +23,9 @@ class App extends Component {
       <Provider store={store}>
         <main className={styles.main}>
           <Router history={history}>
-            <Header />
-            <Route path="/" exact component={Home} />
-            <Route path="/home" component={Home} />
+            { isDevelopment ? null : <Header />}
+            <Route path="/" exact component={Login} />
+            <Route path="/login" component={Login} />
           </Router>
         </main>
       </Provider>

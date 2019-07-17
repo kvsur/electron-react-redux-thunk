@@ -12,12 +12,13 @@ import history from '@/router-dom/history';
 
 const electron = window.electron;
 
-const { ipcRenderer } = electron;
+const { ipcRenderer } = electron || {};
 
 // import { ipcRenderer } from 'electron';
 
 // const remote = require('electron').remote;
 
+@connect()
 class Header extends Component {
     // static propTypes = {
     //     prop: PropTypes
@@ -28,7 +29,7 @@ class Header extends Component {
 
     componentDidMount() {
         // console.log(this.props);
-        history.push('/home');
+        history.push('/login');
     }
 
     toggle(type) {
@@ -60,4 +61,5 @@ class Header extends Component {
     }
 }
 
-export default withRouter(connect()(Header));
+// export default withRouter(connect()(Header));
+export default withRouter(Header);
