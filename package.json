@@ -11,15 +11,15 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "start:app": "electron .",
-    "build:app": "electron-builder --win --x64 --dir --projectDir=./",
-    "build:product": "electron-builder --win --x64 --projectDir=./"
+    "build:app": "electron-builder --win --ia32 --dir --projectDir=./",
+    "build:product": "electron-builder --win --ia32 --projectDir=./"
   },
   "build": {
     "appId": "com.znkf.teaching",
     "productName": "znkf_teaching",
-    "files": ["web_build/**/*", "package.json", "electron/*"],
+    "files": ["build_web/**/*", "package.json", "electron/*"],
     "directories": {
-      "output": "client_build"
+      "output": "build_client"
     }, 
     "mac": {
       "target": [
