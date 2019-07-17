@@ -1,8 +1,8 @@
 {
-  "name": "react-start",
+  "name": "znkf_teaching",
   "version": "0.1.0",
   "private": true,
-  "main": "main.js",
+  "main": "electron/main.js",
   "dependencies": {
     "antd": "^3.20.0",
     "camelcase": "^5.2.0",
@@ -15,11 +15,16 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder --win --x64"
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "start:app": "electron .",
+    "build:app": "electron-builder --win --x64 --dir --projectDir=./"
   },
   "build": {
-    "appId": "com.znkf.app",
+    "appId": "com.znkf.teaching",
+    "productName": "znkf_teaching",
+    "files": ["build/**/*", "package.json", "electron/*"],
     "mac": {
       "target": [
         "dmg",
@@ -159,5 +164,6 @@
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.2.0"
   },
-  "author": "znkf"
+  "author": "znkf",
+  "productName": "znkf_teaching"
 }
