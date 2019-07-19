@@ -1,25 +1,28 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Tray, nativeImage, Menu } = require('electron');
 const { ipcMain } = require('electron');
 const path = require('path');
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
 let win;
+let tray;
 
 function createWindow() {
+    tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     // 创建浏览器窗口。
     win = new BrowserWindow({
-        'width': 810,
-        'minWidth': 600,
-        'height': 550,
-        'minHeight': 500,
-        // 'resizable': false,
-        'title': '教育语音分析系统',
-        'center': true,
-        'titleBarStyle': 'hidden',
-        'zoomToPageWidth': true,
-        'frame': false,
-        // 'show': false
+        width: 810,
+        minWidth: 600,
+        height: 550,
+        minHeight: 500,
+        // resizable: false,
+        title: '教育语音分析系统',
+        center: true,
+        titleBarStyle: 'hidden',
+        zoomToPageWidth: true,
+        frame: false,
+        skipTaskbar: false,
+        // show: false
         webPreferences: {
             devTools: true,
             javascript: true,
@@ -36,7 +39,7 @@ function createWindow() {
     win.loadFile('build_web/index.html');
 
     // 打开开发者工具
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
@@ -49,7 +52,10 @@ function createWindow() {
     /**
      * 监听最大化、最小化、关闭操作
      */
-    ipcMain.on('minus', e => win.minimize());
+    ipcMain.on('minus', e => {
+        win.minimize();
+        global.isAppHide = true;
+    });
     ipcMain.on('max', e => {
         if (win.isMaximized() || win.isFullScreen()) {
             win.unmaximize();
@@ -57,7 +63,44 @@ function createWindow() {
             win.maximize();
         }
     });
-    ipcMain.on('close', e => win.close());
+    ipcMain.on('close', e => {
+        win.hide();
+        global.isAppHide = true;
+    });
+
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '退出',
+            click: function () {
+                app.quit();
+            }
+        }
+    ]);
+    tray.setToolTip('教育语音分析系统');
+    tray.setContextMenu(contextMenu);
+
+    tray.on('click', () => {
+        if (global.isAppHide || win.isMinimized()) {
+            win.show();
+            global.isAppHide = false;
+            win.webContents.send('tray-click');
+        }
+    })
+}
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // 当运行第二个实例时,将会聚焦到win这个窗口
+        if (win) {
+            if (win.isMinimized()) win.restore();
+            win.focus();
+            win.show();
+        }
+    })
 }
 
 // Electron 会在初始化后并准备
@@ -80,61 +123,5 @@ app.on('activate', () => {
     if (win === null) {
         createWindow()
     }
-})
+});
 
-// 在这个文件中，你可以续写应用剩下主进程代码。
-// 也可以拆分成几个文件，然后用 require 导入。
-
-// // Modules to control application life and create native browser window
-// const {app, BrowserWindow} = require('electron')
-// const path = require('path')
-
-// // Keep a global reference of the window object, if you don't, the window will
-// // be closed automatically when the JavaScript object is garbage collected.
-// let mainWindow
-
-// function createWindow () {
-//   // Create the browser window.
-//   mainWindow = new BrowserWindow({
-//     width: 800,
-//     height: 600,
-//     webPreferences: {
-//       preload: path.join(__dirname, 'preload.js')
-//     }
-//   })
-
-//   // and load the index.html of the app.
-//   mainWindow.loadFile('build/demo.html')
-
-//   // Open the DevTools.
-//   // mainWindow.webContents.openDevTools()
-
-//   // Emitted when the window is closed.
-//   mainWindow.on('closed', function () {
-//     // Dereference the window object, usually you would store windows
-//     // in an array if your app supports multi windows, this is the time
-//     // when you should delete the corresponding element.
-//     mainWindow = null
-//   })
-// }
-
-// // This method will be called when Electron has finished
-// // initialization and is ready to create browser windows.
-// // Some APIs can only be used after this event occurs.
-// app.on('ready', createWindow)
-
-// // Quit when all windows are closed.
-// app.on('window-all-closed', function () {
-//   // On macOS it is common for applications and their menu bar
-//   // to stay active until the user quits explicitly with Cmd + Q
-//   if (process.platform !== 'darwin') app.quit()
-// })
-
-// app.on('activate', function () {
-//   // On macOS it's common to re-create a window in the app when the
-//   // dock icon is clicked and there are no other windows open.
-//   if (mainWindow === null) createWindow()
-// })
-
-// // In this file you can include the rest of your app's specific main process
-// // code. You can also put them in separate files and require them here.
