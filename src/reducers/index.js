@@ -4,10 +4,12 @@ import login from './login';
 import user from './user';
 import department from './department';
 import home from './home';
+import lesson from './lesson';
 
 export default combineReducers({
     login,
     user,
     department,
     home,
+    lesson,
 });

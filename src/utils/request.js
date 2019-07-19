@@ -37,7 +37,7 @@ const checkStatus = response => {
 export default function request(url, option) {
     const options = { ...option };
     const newUrl = process.env.BASE_API || '' + url;
-    const defaultOptions = { credentials: 'include' };
+    const defaultOptions = { credentials: 'same-origin' };
     const newOptions = { ...defaultOptions, ...options };
 
     const { method } = newOptions;

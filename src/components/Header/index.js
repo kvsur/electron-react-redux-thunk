@@ -2,13 +2,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-// import { Button } from 'antd';
-import styles from './index.less';
-import { Icon } from 'antd';
-import max from '@/assets/max';
-import middle from '@/assets/middle';
+import { Icon, message } from 'antd';
 
-import history from '@/router-dom/history';
+import styles from './index.less';
+import max from '../../assets/max';
+import middle from '../../assets/middle';
+import history from '../../router-dom/history';
 
 const electron = window.electron;
 
@@ -30,6 +29,9 @@ class Header extends Component {
     componentDidMount() {
         // console.log(this.props);
         history.push('/login');
+        ipcRenderer.on('tray-click', e => {
+            message.info('open app main');
+        });
     }
 
     toggle(type) {
@@ -52,7 +54,7 @@ class Header extends Component {
             <header className={styles['app-header']}>
                 <div className={styles.title}>教育语音分析系统</div>
                 <div className={styles.btns}>
-                    <Icon type="minus" onClick={() => {this.toggle('minus')}} />
+                    <Icon type="minus" onClick={() => {this.toggle('close')}} />
                     <Icon component={isMax ? middle : max} onClick={() => {this.toggle('max')}} />
                     <Icon type="close" onClick={() => {this.toggle('close')}} />
                 </div>

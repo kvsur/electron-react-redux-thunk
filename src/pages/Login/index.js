@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import styles from './index.less';
 import { Form, Button, Input, message, Icon } from 'antd';
-// import { Button } from 'antd';
-// import { getSingleModel } from '../../thunk/home';
+import { connect } from 'react-redux';
+
+import history from '../../router-dom/history';
+import { login } from '../../thunk/login';
+import Layout from '../../components/Layout';
+
 const formItemLayout = {
     labelCol: {
         xs: { span: 0 },
@@ -20,6 +22,10 @@ const Item = Form.Item;
 @Form.create()
 @connect()
 class Login extends Component {
+    state = {
+        loading: false,
+    };
+
     componentDidMount() {
         // const { dispatch } = this.props;
         // dispatch({
@@ -31,44 +37,60 @@ class Login extends Component {
     submit = e => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
-          if (!err) {
-              message.success('认证成功');
-          }
+            if (!err) {
+                this.setState({
+                    loading: true,
+                });
+                const { userAccount, password } = values;
+                const { dispatch } = this.props;
+                dispatch(login({ userAccount, password }))
+                    .then(() => {
+                        message.success('登录成功');
+                        history.push('/lesson');
+                    })
+                    .catch(() => {
+                        message.error('登录失败');
+                    })
+                    .finally(() => {
+                        this.setState({
+                            loading: false,
+                        });
+                    });
+            }
         });
-      };
+    };
 
     render() {
         // const { models, loading } = this.props;
         const { getFieldDecorator } = this.props.form;
+        const { loading } = this.state;
         return (
-            <main className={styles.login}>
-                <header className={styles.header}>教育语音分析系统</header>
-                <section className={styles.body}>
-                    <Form {...formItemLayout}>
-                        <Item required={false}>
-                            {
-                                getFieldDecorator('userAccount', {
-                                    rules: [{ required: true, message: '登录用户名不能为空' }],
-                                })(
-                                    <Input prefix={<Icon type="user" />} placeholder="请输入登录用户名" onPressEnter={this.submit} />
-                                )
-                            }
-                        </Item>
-                        <Item required={false}>
-                            {
-                                getFieldDecorator('password', {
-                                    rules: [{ required: true, message: '密码不能为空' }],
-                                })(
-                                    <Input prefix={<Icon type="lock" />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
-                                )
-                            }
-                        </Item>
-                    </Form>
-                </section>
-                <footer className={styles.footer}>
-                    <Button type="primary" onClick={this.submit}>登录</Button>
-                </footer>
-            </main>
+            <Layout
+                title="登录"
+                footer={<div><Button type="primary" onClick={this.submit} loading={loading} >登录</Button></div>}
+                style={{height: '242px'}}
+            >
+                <Form {...formItemLayout}>
+                    <Item required={false}>
+                        {
+                            getFieldDecorator('userAccount', {
+                                rules: [{ required: true, message: '登录用户名不能为空' }],
+                            })(
+                                <Input prefix={<Icon type="user" />} placeholder="请输入登录用户名" onPressEnter={this.submit} />
+                            )
+                        }
+                    </Item>
+                    <Item required={false}>
+                        {
+                            getFieldDecorator('password', {
+                                rules: [{ required: true, message: '密码不能为空' }],
+                            })(
+                                <Input prefix={<Icon type="lock" />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
+                            )
+                        }
+                    </Item>
+                </Form>
+            </Layout>
         )
     }
 }
