@@ -36,26 +36,25 @@ class Login extends Component {
 
     submit = e => {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields(async (err, values) => {
             if (!err) {
                 this.setState({
                     loading: true,
                 });
                 const { userAccount, password } = values;
                 const { dispatch } = this.props;
-                dispatch(login({ userAccount, password }))
-                    .then(() => {
-                        message.success('登录成功');
-                        history.push('/lesson');
-                    })
-                    .catch(() => {
-                        message.error('登录失败');
-                    })
-                    .finally(() => {
-                        this.setState({
-                            loading: false,
-                        });
+                try {
+                    await dispatch(login({ userAccount, password }));
+                    message.success('登录成功');
+                    history.push('/lesson');
+                } catch(e) {
+                    console.error(e);
+                    message.error('登录失败');
+                } finally {
+                    this.setState({
+                        loading: false,
                     });
+                }
             }
         });
     };

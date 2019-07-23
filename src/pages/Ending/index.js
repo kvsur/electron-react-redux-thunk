@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
 
+const electron = window.electron;
+const { ipcRenderer } = electron || {};
+
+
 const formItemLayout = {
     labelCol: {
         xs: { span: 8 },
@@ -29,25 +33,34 @@ class Ending extends Component {
     };
 
     componentDidMount() {
-
+        if (ipcRenderer) {
+            setTimeout(() => {
+                ipcRenderer.send('show');
+            }, 10000);
+        }
     }
 
+    // 延迟下课
     delay = () => {
 
     }
 
+    // 继续上课
     justDoIt = () => {
 
     }
 
     submit = e => {
         e.preventDefault();
+        if (ipcRenderer) {
+            ipcRenderer.send('close');
+        }
         history.push('/login');
     };
 
     render() {
         // const { models, loading } = this.props;
-        const { form: { getFieldDecorator }, grade, subject, subjectList } = this.props;
+        const { form: { getFieldDecorator }, className, subjectId, subjectList } = this.props;
         const { loading, withinTime } = this.state;
         const footer = (
             <div>
@@ -67,7 +80,7 @@ class Ending extends Component {
                         {
                             getFieldDecorator('userAccount', {
                                 rules: [{ required: true, message: '未选择班级' }],
-                                initialValue: grade,
+                                initialValue: className,
                             })(
                                 // <Input prefix={<Icon type="user" />} placeholder="选择班级" onPressEnter={this.submit} />
                                 // <Select placeholder="选择班级" disabled></Select>
@@ -79,7 +92,7 @@ class Ending extends Component {
                         {
                             getFieldDecorator('password', {
                                 rules: [{ required: true, message: '未选择科目' }],
-                                initialValue: subject
+                                initialValue: subjectId
                             })(
                                 <Select placeholder="选择科目" disabled>
                                     {
@@ -94,7 +107,9 @@ class Ending extends Component {
                             )
                         }
                     </Item>
-                    <span>请确认下课，若无操作，录音将在 20 s 后自动关闭。</span>
+                    {
+                        !withinTime ? <span>请确认下课，若无操作，录音将在 20 s 后自动关闭。</span> : null
+                    }
                 </Form>
             </Layout>
         )

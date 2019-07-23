@@ -92,7 +92,7 @@ export default function request(url, option) {
                 };
             }
             return {
-                message: '登录用户session过期，请重新登录'
+                message: '请求错误'
             };
         })
 }

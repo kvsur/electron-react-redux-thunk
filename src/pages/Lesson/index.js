@@ -4,6 +4,11 @@ import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
+import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
+
+const electron = window.electron;
+
+const { ipcRenderer } = electron || {};
 
 const formItemLayout = {
     labelCol: {
@@ -19,15 +24,18 @@ const formItemLayout = {
 const Item = Form.Item;
 
 @Form.create()
-@connect(({lesson}) => ({
+@connect(({ lesson }) => ({
     ...lesson
 }))
 class Lesson extends Component {
+    timer = null;
+
     state = {
         loading: false,
+        time: NO_OPRATION_TIME,
     };
 
-    componentDidMount() {
+    componentWillMount() {
         // const { dispatch } = this.props;
         // dispatch({
         //     type: 'home'
@@ -35,23 +43,59 @@ class Lesson extends Component {
         // console.log(this.props);
     }
 
+    componentDidMount() {
+        // 规定时间后无任何操作则自动进行开始上课的操作
+        this.timer = setInterval(() => {
+            const { time } = this.state;
+            if (time === 0) {
+                this.submit({preventDefault: () => {}});
+            } else {
+                this.setState({
+                    time: time - 1
+                });
+            }
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer);
+    }
+
+
     back = () => {
+        clearInterval(this.timer);
         history.push('/login');
     }
 
     submit = e => {
+        clearInterval(this.timer);
         e.preventDefault();
-        history.push('/ending');
+        this.props.form.validateFields(async (err, values) => {
+            if (!err) {
+                const { dispatch } = this.props;
+                const { subjectId } = values;
+                dispatch({
+                    type: TYPES.UPDATE_SUBJECT_ID,
+                    payload: {
+                        subjectId
+                    },
+                });
+                if (ipcRenderer) {
+                    ipcRenderer.send('close');
+                }
+                history.push('/ending');
+            }
+        });
     };
 
     render() {
         // const { models, loading } = this.props;
-        const { form: { getFieldDecorator }, grade, subjectList, subject } = this.props;
-        const { loading } = this.state;
+        const { form: { getFieldDecorator }, className, subjectList, subjectId } = this.props;
+        const { loading, time } = this.state;
         const footer = (
             <div>
                 <Button type="default" onClick={this.back}>返回</Button>
-                <Button type="primary" onClick={this.submit} loading={loading} style={{marginLeft: '20px'}}>开始上课</Button>
+                <Button type="primary" onClick={this.submit} loading={loading} style={{ marginLeft: '20px' }}>开始上课</Button>
             </div>
         );
         return (
@@ -59,9 +103,9 @@ class Lesson extends Component {
                 <Form {...formItemLayout}>
                     <Item required={false} label="班级">
                         {
-                            getFieldDecorator('userAccount', {
+                            getFieldDecorator('className', {
                                 rules: [{ required: true, message: '未选择班级' }],
-                                initialValue: grade,
+                                initialValue: className,
                             })(
                                 <Input placeholder="班级" disabled />
                             )
@@ -69,11 +113,11 @@ class Lesson extends Component {
                     </Item>
                     <Item required={false} label="科目">
                         {
-                            getFieldDecorator('password', {
+                            getFieldDecorator('subjectId', {
                                 rules: [{ required: true, message: '未选择科目' }],
-                                initialValue: subject
+                                initialValue: subjectId
                             })(
-                                <Select placeholder="选择班级">
+                                <Select placeholder="选择科目">
                                     {
                                         subjectList.map(item => {
                                             const { id, subjectName } = item;
@@ -86,7 +130,7 @@ class Lesson extends Component {
                             )
                         }
                     </Item>
-                    <span>请选择科目，若无操作，课程记录将在 20 s 后自动开启。</span>
+                    <span>请选择科目，若无操作，课程记录将在{` ${time} `}s 后自动开启。</span>
                 </Form>
             </Layout>
         )

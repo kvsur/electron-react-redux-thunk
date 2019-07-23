@@ -29,9 +29,9 @@ class Header extends Component {
     componentDidMount() {
         // console.log(this.props);
         history.push('/login');
-        ipcRenderer.on('tray-click', e => {
-            message.info('open app main');
-        });
+        // ipcRenderer.on('tray-click', e => {
+        //     message.info('客户端已恢复展示');
+        // });
     }
 
     toggle(type) {
