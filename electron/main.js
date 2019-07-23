@@ -22,7 +22,7 @@ function createWindow() {
         zoomToPageWidth: true,
         frame: false,
         skipTaskbar: false,
-        // show: false
+        show: false,
         webPreferences: {
             devTools: true,
             javascript: true,
@@ -85,7 +85,11 @@ function createWindow() {
             global.isAppHide = false;
             win.webContents.send('tray-click');
         }
-    })
+    });
+
+    setTimeout(() => {
+        win.show();
+    }, 10000);
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
