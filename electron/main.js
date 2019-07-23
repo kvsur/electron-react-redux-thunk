@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Tray, nativeImage, Menu } = require('electron');
 const { ipcMain } = require('electron');
 const path = require('path');
+const appConfig = require('./app.config');
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
@@ -10,28 +11,7 @@ let tray;
 function createWindow() {
     tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     // 创建浏览器窗口。
-    win = new BrowserWindow({
-        width: 810,
-        minWidth: 600,
-        height: 550,
-        minHeight: 500,
-        // resizable: false,
-        title: '教育语音分析系统',
-        center: true,
-        titleBarStyle: 'hidden',
-        zoomToPageWidth: true,
-        frame: false,
-        skipTaskbar: false,
-        show: false,
-        webPreferences: {
-            devTools: true,
-            javascript: true,
-            plugins: true,
-            nodeIntegration: false, // 不集成 Nodejs
-            webSecurity: false,
-            preload: path.join(__dirname, './renderer.js') // 但预加载的 js 文件内仍可以使用 Nodejs 的 API
-        }
-    });
+    win = new BrowserWindow({...appConfig});
 
     // win.setMenu(null);
 
@@ -64,8 +44,14 @@ function createWindow() {
         }
     });
     ipcMain.on('close', e => {
+        // win.close();
         win.hide();
         global.isAppHide = true;
+    });
+
+    ipcMain.on('show', e => {
+        win.show();
+        global.isAppHide = false;
     });
 
     const contextMenu = Menu.buildFromTemplate([
@@ -83,13 +69,18 @@ function createWindow() {
         if (global.isAppHide || win.isMinimized()) {
             win.show();
             global.isAppHide = false;
-            win.webContents.send('tray-click');
+            // win.webContents.send('process_event', {
+            //     event_name: 'classEnd'
+            // });
+            // win.webContents.send('process_event', {
+            //     event_name: 'classStart'
+            // });
         }
     });
 
-    setTimeout(() => {
-        win.show();
-    }, 10000);
+    // setTimeout(() => {
+    //     win.show();
+    // }, 10000);
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
