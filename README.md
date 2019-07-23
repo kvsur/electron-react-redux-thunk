@@ -6,4 +6,5 @@
 3. yarn build // webpack 打包
 4. yarn start:app // 启动测试客户端
 5. yarn build:app // 构建测试客户端
-6. yarn build:product // 构建正式客户端
+6. yarn build:product // 构建正式客户端\
+7. yarn server // 启动mock
