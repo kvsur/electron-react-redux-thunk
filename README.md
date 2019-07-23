@@ -8,3 +8,6 @@
 5. yarn build:app // 构建测试客户端
 6. yarn build:product // 构建正式客户端\
 7. yarn server // 启动mock
+
+
+##### 本项目为练手项目，electron 和react 全家桶可以单独进行分离，不一定要一起使用
