@@ -16,6 +16,7 @@
 /client_build
 /build_web
 /build_client
+/.vscode
 
 # misc
 .DS_Store
