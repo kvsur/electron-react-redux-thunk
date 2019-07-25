@@ -1,4 +1,4 @@
-import { getClassSchedule } from '../serivces/lesson';
+import { getClassSchedule, classStart, classEnd } from '../serivces/lesson';
 import TYPES from '../constants/COMMON_ACTION_TYPES';
 
 export const getSchedule = () => {
@@ -20,7 +20,7 @@ export const getSchedule = () => {
                         studyRestEndTime
                     };
                 });
-                console.log(schedule);
+                // console.log(schedule);
                 dispatch({
                     type: TYPES.UPDATE_SCHEDULE,
                     payload: {
@@ -31,7 +31,35 @@ export const getSchedule = () => {
             }
             throw new Error(res.message);
         } catch(e) {
-            return Promise.reject(e);
+            return Promise.reject(e.message);
+        }
+    }
+}
+
+export const startClass = ({time, subjectId}) => {
+    return async dispatch => {
+        try {
+            const res = await classStart({time, subjectId});
+            if (res.code === 'A0001') {
+                return Promise.resolve();
+            }
+            throw new Error(res.message);
+        } catch(e) {
+            return Promise.reject(e.message);
+        }
+    }
+}
+
+export const endClass = ({time, subjectId}) => {
+    return async dispatch => {
+        try {
+            const res = await classEnd({time, subjectId});
+            if (res.code === 'A0001') {
+                return Promise.resolve();
+            }
+            throw new Error(res.message);
+        } catch(e) {
+            return Promise.reject(e.message);
         }
     }
 }

@@ -43,16 +43,19 @@ class Login extends Component {
                 });
                 const { userAccount, password } = values;
                 const { dispatch } = this.props;
+                let changRoute = 0;
                 try {
                     await dispatch(login({ userAccount, password }));
                     message.success('登录成功');
-                    history.push('/lesson');
+                    changRoute = 1;
                 } catch(e) {
                     console.error(e);
                     message.error('登录失败');
                 } finally {
                     this.setState({
                         loading: false,
+                    }, () => {
+                        if (changRoute) history.push('/lesson');
                     });
                 }
             }

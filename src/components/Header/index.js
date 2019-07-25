@@ -8,10 +8,11 @@ import styles from './index.less';
 import max from '../../assets/max';
 import middle from '../../assets/middle';
 import history from '../../router-dom/history';
+import Bridge from '../../utils/bridge';
 
-const electron = window.electron;
+// const electron = window.electron;
 
-const { ipcRenderer } = electron || {};
+// const { ipcRenderer } = electron || {};
 
 // import { ipcRenderer } from 'electron';
 
@@ -32,19 +33,29 @@ class Header extends Component {
         // ipcRenderer.on('tray-click', e => {
         //     message.info('客户端已恢复展示');
         // });
+        Bridge.on('tray-click', this.handleTrayClick);
+        Bridge.on('win-max', this.processToggle);
+
+    }
+
+    componentWillUnmount() {
+        Bridge.cancel('tray-click', this.handleTrayClick);
+        Bridge.cancel('win-max', this.processToggle);
+    }
+
+    handleTrayClick = (data) => {
+        console.log(data);
+        message.info('客户端已恢复展示');
+    }
+
+    processToggle = isMax => {
+        this.setState({
+            isMax,
+        });
     }
 
     toggle(type) {
-        ipcRenderer.send(type);
-
-        if (type === 'max') {
-            const { isMax } = this.state;
-
-            this.setState({
-                isMax: !isMax,
-            });
-        }
-        // remote.getCurrentWindow().maximize();
+        Bridge.send(type);
     };
 
     render() {

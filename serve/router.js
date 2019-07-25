@@ -69,6 +69,8 @@ router.post('/getClassSchedule', (req, res) => {
 });
 
 router.post('/classStart', (req, res) => {
+    const { time, subjectId } = req.body;
+    console.log({ time, subjectId });
     res.json({
         "code": 'A0001',
         "message": "请求成功",
@@ -77,6 +79,8 @@ router.post('/classStart', (req, res) => {
 });
 
 router.post('/classEnd', (req, res) => {
+    const { time, subjectId } = req.body;
+    console.log({ time, subjectId });
     res.json({
         "code": 'A0001',
         "message": "请求成功",

@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Form, Button, Select, Input } from 'antd';
+import { Form, Button, Select, Input, message } from 'antd';
 import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
+import Bridge from '../../utils/bridge';
+import { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
+import { endClass } from '../../thunk/lesson';
 
-const electron = window.electron;
-const { ipcRenderer } = electron || {};
+// const electron = window.electron;
+// const { ipcRenderer } = electron || {};
 
 
 const formItemLayout = {
@@ -27,41 +30,90 @@ const Item = Form.Item;
     ...lesson
 }))
 class Ending extends Component {
+    timer = null;
+
     state = {
         loading: false,
-        withinTime: true
+        withinTime: true,
+        time: NO_OPRATION_TIME,
     };
 
     componentDidMount() {
-        if (ipcRenderer) {
-            setTimeout(() => {
-                ipcRenderer.send('show');
-            }, 10000);
-        }
+        // if (ipcRenderer) {
+        //     setTimeout(() => {
+        //         ipcRenderer.send('show');
+        //     }, 10000);
+        // }
+        Bridge.on('class-will-end', this.handleClassEnd);
+    }
+
+    componentWillUnmount() {
+        Bridge.cancel('class-will-end', this.handleClassEnd);
+    }
+
+    handleClassEnd = () => {
+        this.setState({
+            withinTime: false,
+        });
+        this.timer = setInterval(() => {
+            const { time } = this.state;
+            if (time === 0) {
+                this.submit({preventDefault: () => {}});
+            } else {
+                this.setState({
+                    time: time - 1
+                });
+            }
+        }, 1000);
     }
 
     // 延迟下课
     delay = () => {
-
+        clearInterval(this.timer);
+        this.setState({
+            withinTime: true,
+        });
+        Bridge.send('class-delay', 1);
     }
 
     // 继续上课
     justDoIt = () => {
-
+        Bridge.send('close');
     }
 
-    submit = e => {
+    submit = async e => {
+        clearInterval(this.timer);
         e.preventDefault();
-        if (ipcRenderer) {
-            ipcRenderer.send('close');
+        // if (ipcRenderer) {
+        //     ipcRenderer.send('close');
+        // }
+        this.setState({
+            loading: true,
+        });
+        let changeRoute = 0;
+        try {
+            const { dispatch, subjectId } = this.props;
+            const time = new Date().getTime();
+            
+            await dispatch(endClass({time, subjectId}));
+
+            Bridge.send('class-end', 0.5);
+            changeRoute = 1;
+        } catch (e) {
+            message.error(e);
+        } finally {
+            this.setState({
+                loading: false,
+            }, () => {
+                if (changeRoute) history.push('/login');
+            });
         }
-        history.push('/login');
     };
 
     render() {
         // const { models, loading } = this.props;
         const { form: { getFieldDecorator }, className, subjectId, subjectList } = this.props;
-        const { loading, withinTime } = this.state;
+        const { loading, withinTime, time } = this.state;
         const footer = (
             <div>
                 {
@@ -108,7 +160,7 @@ class Ending extends Component {
                         }
                     </Item>
                     {
-                        !withinTime ? <span>请确认下课，若无操作，录音将在 20 s 后自动关闭。</span> : null
+                        !withinTime ? <span>请确认下课，若无操作，录音将在{`${time}`}s 后自动关闭。</span> : null
                     }
                 </Form>
             </Layout>

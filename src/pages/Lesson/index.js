@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { Form, Button, Select, Input } from 'antd';
+import { Form, Button, Select, Input, message } from 'antd';
 import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
 import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
+import Bridge from '../../utils/bridge';
+import { startClass } from '../../thunk/lesson';
 
-const electron = window.electron;
+// const electron = window.electron;
 
-const { ipcRenderer } = electron || {};
+// const { ipcRenderer } = electron || {};
 
 const formItemLayout = {
     labelCol: {
@@ -80,10 +82,29 @@ class Lesson extends Component {
                         subjectId
                     },
                 });
-                if (ipcRenderer) {
-                    ipcRenderer.send('close');
+                this.setState({
+                    loading: true,
+                });
+                // if (ipcRenderer) {
+                //     ipcRenderer.send('close');
+                // }
+                let changeRoute = 0;
+                try {
+                    const time = new Date().getTime();
+
+                    await dispatch(startClass({time, subjectId}));
+                    
+                    Bridge.send('class-start', 0.5);
+                    changeRoute = 1;
+                } catch (e) {
+                    message.error(e);
+                } finally {
+                    this.setState({
+                        loading: false,
+                    }, () => {
+                        if (changeRoute) history.push('/ending');
+                    });
                 }
-                history.push('/ending');
             }
         });
     };
@@ -130,7 +151,7 @@ class Lesson extends Component {
                             )
                         }
                     </Item>
-                    <span>请选择科目，若无操作，课程记录将在{` ${time} `}s 后自动开启。</span>
+                    <span>请选择科目，若无操作，课程记录将在{`${time}`}s 后自动开启。</span>
                 </Form>
             </Layout>
         )

@@ -19,7 +19,7 @@ export const login = ({ userAccount, password}) => {
             }
             throw new Error(res.message);
         } catch(e) {
-            return Promise.reject(e);
+            return Promise.reject(e.message);
         }
     }
 }
