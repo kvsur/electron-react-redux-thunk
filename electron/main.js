@@ -2,6 +2,7 @@ const { app, BrowserWindow, Tray, nativeImage, Menu } = require('electron');
 const { ipcMain } = require('electron');
 const path = require('path');
 const appConfig = require('./app.config');
+const Schedule = require('./schedule');
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
@@ -29,6 +30,14 @@ function createWindow() {
         win = null
     });
 
+    win.on('maximize', () => {
+        win.webContents.send('process_event', 'win-max', true);
+    });
+
+    win.on('unmaximize', () => {
+        win.webContents.send('process_event', 'win-max', false);
+    });
+
     /**
      * 监听最大化、最小化、关闭操作
      */
@@ -54,6 +63,9 @@ function createWindow() {
         global.isAppHide = false;
     });
 
+    // schedule 
+    new Schedule(ipcMain, win);
+
     const contextMenu = Menu.buildFromTemplate([
         {
             label: '退出',
@@ -69,12 +81,8 @@ function createWindow() {
         if (global.isAppHide || win.isMinimized()) {
             win.show();
             global.isAppHide = false;
-            // win.webContents.send('process_event', {
-            //     event_name: 'classEnd'
-            // });
-            // win.webContents.send('process_event', {
-            //     event_name: 'classStart'
-            // });
+            // win.webContents.send('process_event', 'classStart', {});
+            win.webContents.send('process_event', 'tray-click', {a: 12});
         }
     });
 
