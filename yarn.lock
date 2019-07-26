@@ -4106,8 +4106,8 @@ electron-to-chromium@^1.3.122, electron-to-chromium@^1.3.164:
 
 electron-updater@^4.1.2:
   version "4.1.2"
-  resolved "https://registry.npmjs.org/electron-updater/-/electron-updater-4.1.2.tgz#46a6e62cc8d0c7d935db7aff83207da2a21ff788"
-  integrity sha512-4Sk8IW0LfOilDz+WAB/gEDmX7+FUFRbKHGN1zGjehPilnd6H9cmjgBHK6Xzq/FLq/uOHGJ6GX/9tsF+jr7CvnA==
+  resolved "https://registry.npm.taobao.org/electron-updater/download/electron-updater-4.1.2.tgz#46a6e62cc8d0c7d935db7aff83207da2a21ff788"
+  integrity sha1-RqbmLMjQx9k123r/gyB9oqIf94g=
   dependencies:
     "@types/semver" "^6.0.1"
     builder-util-runtime "8.3.0"

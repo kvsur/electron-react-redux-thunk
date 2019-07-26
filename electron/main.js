@@ -5,7 +5,10 @@ const path = require('path');
 const appConfig = require('./app.config');
 const Schedule = require('./schedule');
 
-const uploadUrl = '';
+const feedOption = {
+    // "provider": "znkf",
+    "url": 'http://172.19.80.224/packages/docker_images/teaching_package/'
+};
 
 // 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
 // 垃圾回收的时候，window对象将会自动的关闭
@@ -19,9 +22,9 @@ function updateHandle() {
         updateAva: '检测到新版本，正在下载……',
         updateNotAva: '现在使用的就是最新版本，不用更新',
     };
-    // const os = require('os');
+    const os = require('os');
 
-    autoUpdater.setFeedURL(uploadUrl);
+    autoUpdater.setFeedURL(feedOption.url);
     autoUpdater.on('error', function (error) {
         sendUpdateMessage(message.error)
     });
@@ -37,21 +40,21 @@ function updateHandle() {
 
     // 更新下载进度事件
     autoUpdater.on('download-progress', function (progressObj) {
-        win.webContents.send('downloadProgress', progressObj)
+        win.webContents.send('process_event', 'download-progress', progressObj)
     })
     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
 
-        ipcMain.on('isUpdateNow', (e, arg) => {
+        ipcMain.on('update-now', (e, arg) => {
             console.log(arguments);
             console.log("开始更新");
-            //some code here to handle event
+            // 更新之前需要做的事情放在这儿
             autoUpdater.quitAndInstall();
         });
 
-        win.webContents.send('isUpdateNow')
+        win.webContents.send('process_event', 'update-now')
     });
 
-    ipcMain.on("checkForUpdate", () => {
+    ipcMain.on("check-update", () => {
         //执行自动更新检查
         autoUpdater.checkForUpdates();
     })

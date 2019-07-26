@@ -26,31 +26,23 @@
     "directories": {
       "output": "build_client"
     },
-    "publish": [
-      {
-        "provider": "znkf",
-        "url": ""
-      }
-    ],
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": true,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "runAfterFinish": true,
-      "installerIcon": "./build/icon.ico",
-      "uninstallerIcon": "./build/icon.ico"
+      "installerIcon": "build_web/favicon.ico",
+      "uninstallerIcon": "build_web/favicon.ico"
     },
     "mac": {
-      "ico": "build_web/favicon.icns",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
-      "ico": "build_web/favicon.ico",
       "target": [
         {
           "target": "nsis",

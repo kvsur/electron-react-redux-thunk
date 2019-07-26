@@ -15,10 +15,39 @@ import history from './router-dom/history';
 import styles from './App.less';
 import Header from './components/Header';
 
+import Bridge from './utils/bridge';
+import { message } from 'antd';
+
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 class App extends Component {
   state = {};
+
+  componentDidMount() {
+    Bridge.send('check-update');
+    Bridge.on('update-message', this.showUpdateMessage);
+    Bridge.on('download-progress', this.dealProgress);
+    Bridge.on('update-now', this.updateNow);
+  }
+
+  componentWillUnmount() {
+    Bridge.cancel('update-message', this.showUpdateMessage);
+    Bridge.cancel('download-progress', this.dealProgress);
+    Bridge.cancel('update-now', this.updateNow);
+  }
+
+  updateNow = () => {
+    Bridge.send('update-now');
+  }
+
+  showUpdateMessage = msg => {
+    message.warning(msg);
+  }
+
+  dealProgress = progressObj => {
+    // const { transferred, total, bytesPerSecond, } = progressObj;
+    console.log(...progressObj);
+  }
 
   render() {
     return (
