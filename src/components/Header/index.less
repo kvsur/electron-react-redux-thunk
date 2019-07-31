@@ -2,7 +2,7 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-    background: #002140;
+    background: #737373;
     color: #ffffff;
     height: 32px;
     -webkit-user-select: none;
@@ -10,10 +10,21 @@
 
     .title {
         flex: 1;
+        display: flex;
+        align-items: center;
         line-height: 32px;
         font-size: 14px;
         font-weight: bolder;
-        padding-left: 10px;
+        // padding-left: 10px;
+
+        .icon {
+            display: inline-block;
+            height: 32px;
+            width: 32px;
+            padding: 0;
+            background-repeat: no-repeat;
+            background-image: url('../../assets/icon.png');
+        }
     }
 
     .btns {
