@@ -133,21 +133,21 @@ function createWindow() {
     const contextMenu = Menu.buildFromTemplate([
         {
             label: '开发者工具',
-            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/udpate16.png')),
+            icon: path.join(__dirname, './icons/udpate16.png'),
             click: function () {
                 win.webContents.openDevTools();;
             }
         },
         {
             label: '检测更新',
-            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/udpate16.png')),
+            icon: path.join(__dirname, './icons/udpate16.png'),
             click: function () {
                 hanldeUpateFromRender();
             }
         },
         {
             label: '退出',
-            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/exit16.png')),
+            icon: path.join(__dirname, './icons/exit16.png'),
             click: function () {
                 app.quit();
             }
