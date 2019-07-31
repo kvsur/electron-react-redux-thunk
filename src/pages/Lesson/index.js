@@ -70,7 +70,7 @@ class Lesson extends Component {
     }
 
     classStart  = (now, endTimeList) => {
-        Bridge.send('class-start', 0.5);
+        Bridge.send('class-start', 30000);
         return;
         // if (endTimeList && endTimeList.length) {
         //     const next = endTimeList.shift();
