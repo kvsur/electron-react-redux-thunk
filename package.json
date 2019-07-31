@@ -3,7 +3,7 @@
   "description": "teaching_QA analysis system",
   "author": "kvsur",
   "productName": "znkf_teaching",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -21,13 +21,13 @@
     "files": [
       "build_web/**/*",
       "package.json",
-      "electron/*"
+      "electron/**/*"
     ],
     "directories": {
       "output": "build_client"
     },
     "nsis": {
-      "artifactName": "${productName}-Setup-${version}.${ext}.",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
