@@ -4,11 +4,28 @@ export default function reducer(state, action) {
     const { type, payload } = action;
 
     switch(type) {
-        case TYPES.UPDATE_SUBJECT_LIST: {
-            const { className, subjectList } = payload;
+        case TYPES.UPDATE_CLASS_INFO: {
+            const { classId, className, schoolId, deviceId } = payload;
             return {
                 ...state,
+                classId,
                 className,
+                schoolId,
+                deviceId,
+            };
+        }
+        case TYPES.UPDATE_USER_ACCOUNT: {
+            const { userAccount } = payload;
+            return {
+                ...state,
+                userAccount,
+            };
+        }
+        case TYPES.UPDATE_SUBJECT_LIST: {
+            const { name:userName, subjectList } = payload;
+            return {
+                ...state,
+                userName,
                 subjectList: [...subjectList],
                 subjectId: subjectList[0].id,
             };

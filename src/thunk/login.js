@@ -1,6 +1,6 @@
 import { auth } from '../serivces/login';
 import TYPES from '../constants/COMMON_ACTION_TYPES';
-import { getSchedule } from './lesson';
+import { getSchedule, getClassInfo } from './lesson';
 
 export const login = ({ userAccount, password}) => {
     return async dispatch => {
@@ -9,11 +9,18 @@ export const login = ({ userAccount, password}) => {
             const res = await auth({ userAccount, password});
             if (res.code === 'A0001') {
                 dispatch({
+                    type: TYPES.UPDATE_USER_ACCOUNT,
+                    payload: {
+                        userAccount
+                    }
+                });
+                dispatch({
                     type: TYPES.UPDATE_SUBJECT_LIST,
                     payload: {
                         ...res.data,
                     }
                 });
+                dispatch(getClassInfo());
                 dispatch(getSchedule());
                 return Promise.resolve();
             }

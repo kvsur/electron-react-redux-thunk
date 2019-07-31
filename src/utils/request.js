@@ -3,6 +3,8 @@ import { stringify } from 'qs';
 // import { BrowserRouter as Router } from 'react-router-dom';
 import { notification } from 'antd';
 
+const BASE_API = 'http://127.0.0.1:1024/teaching';
+
 const codeMessage = {
     200: '服务器成功返回请求的数据。',
     201: '新建或修改数据成功。',
@@ -36,8 +38,8 @@ const checkStatus = response => {
 
 export default function request(url, option) {
     const options = { ...option };
-    const newUrl = process.env.BASE_API || '' + url;
     const defaultOptions = { credentials: 'same-origin' };
+    const newUrl = BASE_API + url;
     const newOptions = { ...defaultOptions, ...options };
 
     const { method } = newOptions;

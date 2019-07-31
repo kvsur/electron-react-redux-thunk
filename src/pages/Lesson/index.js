@@ -27,7 +27,7 @@ const Item = Form.Item;
 
 @Form.create()
 @connect(({ lesson }) => ({
-    ...lesson
+    ...lesson,
 }))
 class Lesson extends Component {
     timer = null;
@@ -69,12 +69,23 @@ class Lesson extends Component {
         history.push('/login');
     }
 
+    classStart  = (now, endTimeList) => {
+        Bridge.send('class-start', 0.5);
+        return;
+        // if (endTimeList && endTimeList.length) {
+        //     const next = endTimeList.shift();
+        //     if (next > now) Bridge.send('class-start', next);
+        //     // if (next > now) Bridge.send('class-start', 0.5);
+        //     else this.classStart(now, endTimeList);
+        // }
+    }
+
     submit = e => {
         clearInterval(this.timer);
         e.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const { dispatch } = this.props;
+                const { dispatch, userAccount, schedule: { endTimeList} } = this.props;
                 const { subjectId } = values;
                 dispatch({
                     type: TYPES.UPDATE_SUBJECT_ID,
@@ -92,9 +103,8 @@ class Lesson extends Component {
                 try {
                     const time = new Date().getTime();
 
-                    await dispatch(startClass({time, subjectId}));
-                    
-                    Bridge.send('class-start', 0.5);
+                    await dispatch(startClass({time, subjectId, userAccount}));
+                    this.classStart(time, endTimeList);
                     changeRoute = 1;
                 } catch (e) {
                     message.error(e);

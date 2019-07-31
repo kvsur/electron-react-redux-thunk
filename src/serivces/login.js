@@ -1,7 +1,6 @@
-import request from '@/utils/request';
-import { BASE_API } from '../constants/COMMON_ACTION_TYPES';
+import request from '../utils/request';
 
-export const auth = body => request(`${BASE_API}/login`, {
+export const auth = body => request(`/user/login`, {
     method: 'POST',
     body,
 })

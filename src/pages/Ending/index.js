@@ -27,7 +27,7 @@ const Item = Form.Item;
 
 @Form.create()
 @connect(({ lesson }) => ({
-    ...lesson
+    ...lesson,
 }))
 class Ending extends Component {
     timer = null;
@@ -67,6 +67,17 @@ class Ending extends Component {
         }, 1000);
     }
 
+    classEnd = (now, startTimeList) => {
+        Bridge.send('class-end', 30000);
+        return;
+        // if (startTimeList && startTimeList.length) {
+        //     const next = startTimeList.shift();
+        //     // if (now < next)  Bridge.send('class-end', next);
+        //     if (now < next)  Bridge.send('class-end', 30000);
+        //     else this.classEnd(now, startTimeList);
+        // }
+    }
+
     // 延迟下课
     delay = () => {
         clearInterval(this.timer);
@@ -92,12 +103,11 @@ class Ending extends Component {
         });
         let changeRoute = 0;
         try {
-            const { dispatch, subjectId } = this.props;
+            const { dispatch, subjectId, userAccount, schedule: { startTimeList } } = this.props;
             const time = new Date().getTime();
             
-            await dispatch(endClass({time, subjectId}));
-
-            Bridge.send('class-end', 0.5);
+            await dispatch(endClass({time, subjectId, userAccount}));
+            this.classEnd(time, startTimeList);
             changeRoute = 1;
         } catch (e) {
             message.error(e);
