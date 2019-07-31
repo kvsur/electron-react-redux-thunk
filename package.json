@@ -3,7 +3,7 @@
   "description": "teaching_QA analysis system",
   "author": "kvsur",
   "productName": "znkf_teaching",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "start:app": "electron .",
-    "build:app": "electron-builder --dir --projectDir=./",
+    "build:app": "electron-builder --win --ia32 --dir --projectDir=./",
     "build:product": "electron-builder --projectDir=./"
   },
   "build": {
@@ -27,9 +27,8 @@
       "output": "build_client"
     },
     "nsis": {
+      "artifactName": "${productName}-Setup-${version}.${ext}.",
       "oneClick": false,
-      "perMachine": true,
-      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "runAfterFinish": true,
@@ -37,12 +36,14 @@
       "uninstallerIcon": "build_web/favicon.ico"
     },
     "mac": {
+      "icon": "build_web/favicon.icns",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
+      "icon": "build_web/favicon.ico",
       "target": [
         {
           "target": "nsis",
@@ -55,9 +56,7 @@
   },
   "dependencies": {
     "antd": "^3.20.0",
-    "camelcase": "^5.2.0",
     "electron-updater": "^4.1.2",
-    "is-wsl": "^1.1.0",
     "isomorphic-fetch": "^2.2.1",
     "less": "^3.9.0",
     "qs": "^6.7.0",
@@ -66,8 +65,7 @@
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0",
-    "request": "^2.88.0"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",
@@ -86,6 +84,9 @@
     "body-parser": "^1.19.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "cookie-parser": "^1.4.4",
+    "request": "^2.88.0",
+    "camelcase": "^5.2.0",
+    "is-wsl": "^1.1.0",
     "cors": "^2.8.5",
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",

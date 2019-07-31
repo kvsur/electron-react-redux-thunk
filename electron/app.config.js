@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+    icon: path.join(__dirname, '../build_web/favicon.ico'),
     width: 600,
     minWidth: 600,
     height: 450,

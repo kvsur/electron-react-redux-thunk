@@ -1,6 +1,5 @@
-const { app, BrowserWindow, Tray, nativeImage, Menu } = require('electron');
+const { ipcMain, app, BrowserWindow, Tray, nativeImage, Menu, /** dialog */ } = require('electron');
 const { autoUpdater } = require('electron-updater');
-const { ipcMain } = require('electron');
 const path = require('path');
 const appConfig = require('./app.config');
 const Schedule = require('./schedule');
@@ -15,37 +14,46 @@ const feedOption = {
 let win;
 let tray;
 
+function hanldeUpateFromRender() {
+    //执行自动更新检查
+    win.webContents.send('process_event', 'update-start');
+    autoUpdater.checkForUpdates();
+}
+
 function updateHandle() {
     let message = {
         error: '检查更新出错',
-        checking: '正在检查更新……',
-        updateAva: '检测到新版本，正在下载……',
-        updateNotAva: '现在使用的就是最新版本，不用更新',
+        checking: '正在检查更新...',
+        updateAva: '正在下载更新...',
+        updateNotAva: '当前版本为最新版本',
     };
-    const os = require('os');
+    // const os = require('os');
 
     autoUpdater.setFeedURL(feedOption.url);
     autoUpdater.on('error', function (error) {
-        sendUpdateMessage(message.error)
+        // dialog.showErrorBox('error', error)
+        sendUpdateMessage(message.error);
+        win.webContents.send('process_event', 'update-close', error);
     });
     autoUpdater.on('checking-for-update', function () {
-        sendUpdateMessage(message.checking)
+        sendUpdateMessage(message.checking);
     });
     autoUpdater.on('update-available', function (info) {
-        sendUpdateMessage(message.updateAva)
+        sendUpdateMessage(message.updateAva);
+        win.webContents.send('process_event', 'update-available');
     });
     autoUpdater.on('update-not-available', function (info) {
-        sendUpdateMessage(message.updateNotAva)
+        sendUpdateMessage(message.updateNotAva);
+        win.webContents.send('process_event', 'update-close', info);
     });
 
     // 更新下载进度事件
     autoUpdater.on('download-progress', function (progressObj) {
-        win.webContents.send('process_event', 'download-progress', progressObj)
+        win.webContents.send('process_event', 'download-progress', progressObj);
     })
     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
 
         ipcMain.on('update-now', (e, arg) => {
-            console.log(arguments);
             console.log("开始更新");
             // 更新之前需要做的事情放在这儿
             autoUpdater.quitAndInstall();
@@ -56,17 +64,16 @@ function updateHandle() {
 
     ipcMain.on("check-update", () => {
         //执行自动更新检查
-        autoUpdater.checkForUpdates();
+        hanldeUpateFromRender();
     })
 }
 
 // 通过main进程发送事件给renderer进程，提示更新信息
 function sendUpdateMessage(text) {
-    win.webContents.send('process_event', 'udpate-message', text)
+    win.webContents.send('process_event', 'update-message', text);
 }
 
 function createWindow() {
-    tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     // 创建浏览器窗口。
     win = new BrowserWindow({ ...appConfig });
 
@@ -76,7 +83,7 @@ function createWindow() {
     win.loadFile('build_web/index.html');
 
     // 打开开发者工具
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
@@ -122,13 +129,29 @@ function createWindow() {
     // schedule 
     new Schedule(ipcMain, win);
 
+    tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     const contextMenu = Menu.buildFromTemplate([
         {
+            label: '开发者工具',
+            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/udpate16.png')),
+            click: function () {
+                win.webContents.openDevTools();;
+            }
+        },
+        {
+            label: '检测更新',
+            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/udpate16.png')),
+            click: function () {
+                hanldeUpateFromRender();
+            }
+        },
+        {
             label: '退出',
+            // icon: nativeImage.createFromPath(path.resolve(__dirname, './icons/exit16.png')),
             click: function () {
                 app.quit();
             }
-        }
+        },
     ]);
     tray.setToolTip('教育语音分析系统');
     tray.setContextMenu(contextMenu);
@@ -137,14 +160,8 @@ function createWindow() {
         if (global.isAppHide || win.isMinimized()) {
             win.show();
             global.isAppHide = false;
-            // win.webContents.send('process_event', 'classStart', {});
-            win.webContents.send('process_event', 'tray-click', { a: 12 });
         }
     });
-
-    // setTimeout(() => {
-    //     win.show();
-    // }, 10000);
 
     updateHandle();
 }
@@ -163,7 +180,6 @@ if (!gotTheLock) {
         }
     })
 }
-
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。

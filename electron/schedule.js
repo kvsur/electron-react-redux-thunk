@@ -33,7 +33,7 @@ class Schedule {
             this.win.webContents.send('process_event', isEnd ? 'class-will-start' : 'class-will-end');
             this.win.show();
             global.isAppHide = false;
-        }, timeout * 60 * 1000);
+        }, timeout);
     }
 }
 
