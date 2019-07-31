@@ -2,7 +2,7 @@ const Express = require('express');
 
 const router = new Express.Router();
 
-router.post('/login', (req, res) => {
+router.post('/user/login', (req, res) => {
     const { userAccount, password } = req.body;
     console.log({ userAccount, password });
 
@@ -11,7 +11,7 @@ router.post('/login', (req, res) => {
         "message": "请求成功",
         "data":
         {
-            className: "四（一）班",
+            name: "张瑜浩",
             subjectList: [
                 {
                     id: 'f79asd8f79as8df',
@@ -46,7 +46,20 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.post('/getClassSchedule', (req, res) => {
+router.post('/class/getInfo', (req, res) => {
+    res.json({
+        "code": 'A0001',
+        "message": "请求成功",
+        "data":{
+            "classId":"cvodsglkoert",  //当前教室的编号
+            "className":"四（1）班",  //当前教室的名称
+            "schoolId":"zjhz-xuejunxiaoxue",  //当前教室所在的学校编号
+            "deviceId":"134519998"  //当前教室所在的电脑对应的设备号
+        }
+    });
+});
+
+router.post('/class/getClassSchedule', (req, res) => {
     res.json({
         "code": 'A0001',
         "message": "请求成功",
@@ -68,7 +81,7 @@ router.post('/getClassSchedule', (req, res) => {
     });
 });
 
-router.post('/classStart', (req, res) => {
+router.post('/class/classStart', (req, res) => {
     const { time, subjectId } = req.body;
     console.log({ time, subjectId });
     res.json({
@@ -78,7 +91,7 @@ router.post('/classStart', (req, res) => {
     });
 });
 
-router.post('/classEnd', (req, res) => {
+router.post('/class/classEnd', (req, res) => {
     const { time, subjectId } = req.body;
     console.log({ time, subjectId });
     res.json({

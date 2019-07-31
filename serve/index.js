@@ -26,5 +26,5 @@ App.set('port', PORT);
 const server = http.createServer(App);
 
 server.listen(PORT, () => {
-    App.use('/api',router);
+    App.use('/teaching',router);
 });
