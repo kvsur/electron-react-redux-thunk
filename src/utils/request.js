@@ -90,7 +90,7 @@ export default function request(url, option) {
             }
             if (status >= 404 && status < 422) {
                 return {
-                    message: '当前操作不合理，服务端拒绝处理'
+                    message: '请求错误，请求资源不存在'
                 };
             }
             return {

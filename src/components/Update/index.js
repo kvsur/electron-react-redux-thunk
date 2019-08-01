@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Bridge from '../../utils/bridge';
-import { Modal, Progress } from 'antd';
+import { Modal, Progress, message } from 'antd';
 
 class Updater extends Component {
   state = {
@@ -17,6 +17,7 @@ class Updater extends Component {
     Bridge.on('update-now', this.updateNow);
     Bridge.on('update-close', this.updateClose);
     Bridge.on('update-available', this.updateAvailable);
+    Bridge.on('service-tip', this.serviceTip);
   }
 
   componentDidMount() {
@@ -30,6 +31,12 @@ class Updater extends Component {
     Bridge.cancel('update-now', this.updateNow);
     Bridge.cancel('update-close', this.updateClose);
     Bridge.cancel('update-available', this.updateAvailable);
+    Bridge.cancel('service-tip', this.serviceTip);
+  }
+
+  serviceTip = ({message:msg, type}) => {
+    message[type](msg);
+    console.log(msg);
   }
 
   checkUpateStart = () => {

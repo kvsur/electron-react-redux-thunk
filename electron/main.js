@@ -1,8 +1,9 @@
-const { ipcMain, app, BrowserWindow, Tray, nativeImage, Menu, /** dialog */ } = require('electron');
+const { ipcMain, app, BrowserWindow, Tray, Menu, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const appConfig = require('./app.config');
 const Schedule = require('./schedule');
+const updateJavaService = require('./service.update');
 
 const feedOption = {
     // "provider": "znkf",
@@ -38,24 +39,32 @@ function updateHandle() {
     autoUpdater.on('checking-for-update', function () {
         sendUpdateMessage(message.checking);
     });
-    autoUpdater.on('update-available', function (info) {
+    autoUpdater.on('update-available', async function (info) {
         sendUpdateMessage(message.updateAva);
+        // 更新java 服务
+        // await updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), true);
         win.webContents.send('process_event', 'update-available');
     });
     autoUpdater.on('update-not-available', function (info) {
         sendUpdateMessage(message.updateNotAva);
         win.webContents.send('process_event', 'update-close', info);
+        // 更新java 服务
+        updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
     });
 
     // 更新下载进度事件
     autoUpdater.on('download-progress', function (progressObj) {
         win.webContents.send('process_event', 'download-progress', progressObj);
     })
-    autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+    autoUpdater.on('update-downloaded', async function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+
+        // 更新java 服务
+        await updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), true);
 
         ipcMain.on('update-now', (e, arg) => {
             console.log("开始更新");
             // 更新之前需要做的事情放在这儿
+
             autoUpdater.quitAndInstall();
         });
 
@@ -132,10 +141,17 @@ function createWindow() {
     tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: '开发者工具',
-            icon: path.join(__dirname, './icons/udpate16.png'),
+            label: 'TestServe[DEV]',
+            // icon: path.join(__dirname, './icons/udpate16.png'),
             click: function () {
-                win.webContents.openDevTools();;
+                updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
+            }
+        },
+        {
+            label: 'DevTools[DEV]',
+            // icon: path.join(__dirname, './icons/udpate16.png'),
+            click: function () {
+                win.webContents.openDevTools();
             }
         },
         {
