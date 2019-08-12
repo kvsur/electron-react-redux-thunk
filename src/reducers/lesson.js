@@ -27,7 +27,7 @@ export default function reducer(state, action) {
                 ...state,
                 userName,
                 subjectList: [...subjectList],
-                subjectId: subjectList[0].id,
+                subjectId: subjectList[0].subjectId,
             };
         }
         case TYPES.UPDATE_SCHEDULE: {

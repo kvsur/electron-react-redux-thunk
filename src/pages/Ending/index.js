@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
 import Bridge from '../../utils/bridge';
-import { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
+import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
 import { endClass } from '../../thunk/lesson';
 
 // const electron = window.electron;
@@ -38,6 +38,16 @@ class Ending extends Component {
         time: NO_OPRATION_TIME,
     };
 
+    componentWillMount() {
+        const { dispatch } = this.props;
+        dispatch({
+            type: TYPES.UPDATE_PAGE_TITLE,
+            payload: {
+                pageTitle: '下课',
+            }
+        });
+    }
+
     componentDidMount() {
         // if (ipcRenderer) {
         //     setTimeout(() => {
@@ -67,15 +77,8 @@ class Ending extends Component {
         }, 1000);
     }
 
-    classEnd = (now, startTimeList) => {
-        Bridge.send('class-end', 30000);
-        return;
-        // if (startTimeList && startTimeList.length) {
-        //     const next = startTimeList.shift();
-        //     // if (now < next)  Bridge.send('class-end', next);
-        //     if (now < next)  Bridge.send('class-end', 30000);
-        //     else this.classEnd(now, startTimeList);
-        // }
+    classEnd = (timeout) => {
+        Bridge.send('class-end', timeout);
     }
 
     // 延迟下课
@@ -84,12 +87,23 @@ class Ending extends Component {
         this.setState({
             withinTime: true,
         });
-        Bridge.send('class-delay', 1);
+        Bridge.send('class-delay', (5 * 60 * 1000));
     }
 
     // 继续上课
     justDoIt = () => {
         Bridge.send('close');
+    }
+
+    getNextSchedule = (now, schedules) => {
+        const [...tempSchedules] = schedules;
+        if (now && tempSchedules && tempSchedules.length) {
+            const nextSchedule = tempSchedules.shift();
+            const { milliesStartTime, milliesEndTime } = nextSchedule;
+            if (now < milliesStartTime) return nextSchedule;
+            return this.getNextSchedule(now, tempSchedules);
+        }
+        return null;
     }
 
     submit = async e => {
@@ -103,12 +117,18 @@ class Ending extends Component {
         });
         let changeRoute = 0;
         try {
-            const { dispatch, subjectId, userAccount, schedule: { startTimeList } } = this.props;
-            const time = new Date().getTime();
+            const { dispatch, subjectId, userAccount, schedule } = this.props;
+            const now = new Date().getTime();
+
+            const nextSchedule = this.getNextSchedule(now, schedule);
             
-            await dispatch(endClass({time, subjectId, userAccount}));
-            this.classEnd(time, startTimeList);
-            changeRoute = 1;
+            if (nextSchedule) {
+                const { scheduleTimeId, milliesEndTime, milliesStartTime } = nextSchedule;
+            
+                this.classEnd(now - milliesStartTime);
+                await dispatch(endClass({time: now, subjectId, userAccount, scheduleTimeId}));
+                changeRoute = 1;
+            }
         } catch (e) {
             message.error(e);
         } finally {
@@ -136,7 +156,7 @@ class Ending extends Component {
             </div>
         );
         return (
-            <Layout title="下课" footer={footer}>
+            <Layout title="下课" footer={footer} style={withinTime ? {height: '200px'} : {}}>
                 <Form {...formItemLayout}>
                     <Item required={false} label="班级">
                         {
@@ -159,9 +179,9 @@ class Ending extends Component {
                                 <Select placeholder="选择科目" disabled>
                                     {
                                         subjectList.map(item => {
-                                            const { id, subjectName } = item;
+                                            const { subjectId, subjectName } = item;
                                             return (
-                                                <Select.Option key={id} value={id} >{subjectName}</Select.Option>
+                                                <Select.Option key={subjectId} value={subjectId} >{subjectName}</Select.Option>
                                             );
                                         })
                                     }

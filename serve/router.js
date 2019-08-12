@@ -7,38 +7,38 @@ router.post('/user/login', (req, res) => {
     console.log({ userAccount, password });
 
     res.json({
-        "code": 'A0001',
+        "code": 0,
         "message": "请求成功",
         "data":
         {
             name: "张瑜浩",
             subjectList: [
                 {
-                    id: 'f79asd8f79as8df',
+                    subjectId: 'f79asd8f79as8df',
                     subjectName: '数学'
                 },
                 {
-                    id: 'f79a8sdg687h6g',
+                    subjectId: 'f79a8sdg687h6g',
                     subjectName: '英语'
                 },
                 {
-                    id: '9hnfba8vf68sdf7t',
+                    subjectId: '9hnfba8vf68sdf7t',
                     subjectName: '语文'
                 },
                 {
-                    id: 'fs7f87s8g68sdf5ga',
+                    subjectId: 'fs7f87s8g68sdf5ga',
                     subjectName: '历史'
                 },
                 {
-                    id: '烦a7s6df456asg0000aa',
+                    subjectId: '烦a7s6df456asg0000aa',
                     subjectName: '政治'
                 },
                 {
-                    id: 'fuosidufaisudyfdffsdf6',
+                    subjectId: 'fuosidufaisudyfdffsdf6',
                     subjectName: '化学'
                 },
                 {
-                    id: 'fasdf8a7s8g76a8s7f__',
+                    subjectId: 'fasdf8a7s8g76a8s7f__',
                     subjectName: '物理'
                 },
             ],
@@ -48,7 +48,7 @@ router.post('/user/login', (req, res) => {
 
 router.post('/class/getInfo', (req, res) => {
     res.json({
-        "code": 'A0001',
+        "code": 0,
         "message": "请求成功",
         "data":{
             "classId":"cvodsglkoert",  //当前教室的编号
@@ -61,7 +61,7 @@ router.post('/class/getInfo', (req, res) => {
 
 router.post('/class/getClassSchedule', (req, res) => {
     res.json({
-        "code": 'A0001',
+        "code": 0,
         "message": "请求成功",
         "data":
             [
@@ -85,7 +85,7 @@ router.post('/class/classStart', (req, res) => {
     const { time, subjectId } = req.body;
     console.log({ time, subjectId });
     res.json({
-        "code": 'A0001',
+        "code": 0,
         "message": "请求成功",
         data: null
     });
@@ -95,7 +95,7 @@ router.post('/class/classEnd', (req, res) => {
     const { time, subjectId } = req.body;
     console.log({ time, subjectId });
     res.json({
-        "code": 'A0001',
+        "code": 0,
         "message": "请求成功",
         data: null
     });

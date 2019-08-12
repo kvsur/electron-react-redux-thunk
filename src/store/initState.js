@@ -3,6 +3,7 @@ import home from './home';
 import user from './user';
 import department from './department';
 import lesson from './lesson';
+import global from './global';
 
 export default {
     login,
@@ -10,4 +11,5 @@ export default {
     user,
     department,
     lesson,
+    global,
 }

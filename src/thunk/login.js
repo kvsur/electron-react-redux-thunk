@@ -7,7 +7,7 @@ export const login = ({ userAccount, password}) => {
         // console.log(userAccount, password);
         try {
             const res = await auth({ userAccount, password});
-            if (res.code === 'A0001') {
+            if (res.code === 0) {
                 dispatch({
                     type: TYPES.UPDATE_USER_ACCOUNT,
                     payload: {

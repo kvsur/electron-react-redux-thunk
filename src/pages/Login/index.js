@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import history from '../../router-dom/history';
 import { login } from '../../thunk/login';
 import Layout from '../../components/Layout';
+import TYPES from '../../constants/COMMON_ACTION_TYPES';
 
 const formItemLayout = {
     labelCol: {
@@ -26,12 +27,14 @@ class Login extends Component {
         loading: false,
     };
 
-    componentDidMount() {
-        // const { dispatch } = this.props;
-        // dispatch({
-        //     type: 'home'
-        // })
-        // console.log(this.props);
+    componentWillMount() {
+        const { dispatch } = this.props;
+        dispatch({
+            type: TYPES.UPDATE_PAGE_TITLE,
+            payload: {
+                pageTitle: '登录',
+            }
+        });
     }
 
     submit = e => {
@@ -70,22 +73,22 @@ class Login extends Component {
             <Layout
                 title="登录"
                 footer={<div><Button type="primary" onClick={this.submit} loading={loading} >登录</Button></div>}
-                style={{height: '242px'}}
+                style={{height: '200px'}}
             >
                 <Form {...formItemLayout}>
                     <Item required={false}>
                         {
                             getFieldDecorator('userAccount', {
-                                rules: [{ required: true, message: '登录用户名不能为空' }],
+                                rules: [{ required: true, message: '登录名为空' }],
                             })(
-                                <Input prefix={<Icon type="user" />} placeholder="请输入登录用户名" onPressEnter={this.submit} />
+                                <Input prefix={<Icon type="user" />} placeholder="请输入登录名" onPressEnter={this.submit} />
                             )
                         }
                     </Item>
                     <Item required={false}>
                         {
                             getFieldDecorator('password', {
-                                rules: [{ required: true, message: '密码不能为空' }],
+                                rules: [{ required: true, message: '密码为空' }],
                             })(
                                 <Input prefix={<Icon type="lock" />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
                             )

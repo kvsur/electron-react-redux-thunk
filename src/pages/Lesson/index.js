@@ -38,11 +38,13 @@ class Lesson extends Component {
     };
 
     componentWillMount() {
-        // const { dispatch } = this.props;
-        // dispatch({
-        //     type: 'home'
-        // })
-        // console.log(this.props);
+        const { dispatch } = this.props;
+        dispatch({
+            type: TYPES.UPDATE_PAGE_TITLE,
+            payload: {
+                pageTitle: '科目选择',
+            }
+        });
     }
 
     componentDidMount() {
@@ -69,15 +71,20 @@ class Lesson extends Component {
         history.push('/login');
     }
 
-    classStart  = (now, endTimeList) => {
-        Bridge.send('class-start', 30000);
-        return;
-        // if (endTimeList && endTimeList.length) {
-        //     const next = endTimeList.shift();
-        //     if (next > now) Bridge.send('class-start', next);
-        //     // if (next > now) Bridge.send('class-start', 0.5);
-        //     else this.classStart(now, endTimeList);
-        // }
+    classStart  = (timeout) => {
+        Bridge.send('class-start', timeout);
+    }
+
+    getNextSchedule = (now, schedules) => {
+        const [...tempSchedules] = schedules;
+        if (now && tempSchedules && tempSchedules.length) {
+            const nextSchedule = tempSchedules.shift();
+            const { milliesStartTime, milliesEndTime } = nextSchedule;
+            // 可以提前五分钟上课
+            if ((now >= milliesStartTime || milliesStartTime - now <= (5 * 60 * 1000)) && now < milliesEndTime) return nextSchedule;
+            return this.getNextSchedule(now, tempSchedules);
+        }
+        return null;
     }
 
     submit = e => {
@@ -85,7 +92,7 @@ class Lesson extends Component {
         e.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const { dispatch, userAccount, schedule: { endTimeList} } = this.props;
+                const { dispatch, userAccount, schedule } = this.props;
                 const { subjectId } = values;
                 dispatch({
                     type: TYPES.UPDATE_SUBJECT_ID,
@@ -101,13 +108,21 @@ class Lesson extends Component {
                 // }
                 let changeRoute = 0;
                 try {
-                    const time = new Date().getTime();
+                    const now = new Date().getTime();
 
-                    await dispatch(startClass({time, subjectId, userAccount}));
-                    this.classStart(time, endTimeList);
-                    changeRoute = 1;
+                    // get next schedule item 
+                    const nextSchedule = this.getNextSchedule(now, schedule);
+                    if (nextSchedule) {
+                        const { scheduleTimeId, milliesEndTime, milliesStartTime } = nextSchedule;
+
+                        this.classStart(milliesEndTime - now);
+                        await dispatch(startClass({time: now, subjectId, userAccount, scheduleTimeId}));
+                        changeRoute = 1;
+                    } else {
+                        throw new Error('操作失败，未查询为到当前时间段作息表');
+                    }
                 } catch (e) {
-                    message.error(e);
+                    message.error(e.message || e);
                 } finally {
                     this.setState({
                         loading: false,
@@ -151,9 +166,9 @@ class Lesson extends Component {
                                 <Select placeholder="选择科目">
                                     {
                                         subjectList.map(item => {
-                                            const { id, subjectName } = item;
+                                            const { subjectId, subjectName } = item;
                                             return (
-                                                <Select.Option key={id} value={id} >{subjectName}</Select.Option>
+                                                <Select.Option key={subjectId} value={subjectId} >{subjectName}</Select.Option>
                                             );
                                         })
                                     }

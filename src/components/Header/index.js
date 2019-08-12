@@ -18,7 +18,9 @@ import Bridge from '../../utils/bridge';
 
 // const remote = require('electron').remote;
 
-@connect()
+@connect(({global}) => ({
+    pageTitle: global.pageTitle,
+}))
 class Header extends Component {
     // static propTypes = {
     //     prop: PropTypes
@@ -60,10 +62,11 @@ class Header extends Component {
 
     render() {
         const { isMax } = this.state;
+        const { pageTitle } = this.props;
 
         return (
             <header className={styles['app-header']}>
-                <div className={styles.title}><span className={styles.icon} />教育语音分析系统</div>
+                <div className={styles.title}><span className={styles.icon} />教育语音分析系统{pageTitle? `-${pageTitle}` : pageTitle}</div>
                 <div className={styles.btns}>
                     <Icon type="minus" onClick={() => {this.toggle('close')}} />
                     <Icon component={isMax ? middle : max} onClick={() => {this.toggle('max')}} />
