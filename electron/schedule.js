@@ -7,19 +7,35 @@ class Schedule {
         this.ipcMain = ipcMain;
         this.win = win;
         this.timer = null;
+        this.initTimer = null;
         this.init();
     }
 
     init() {
-         this.ipcMain.on('class-start', (event, timeout) => {
+        // 特殊处理 从后端获取到作息表之后的的处理，如果未到上课时间，用户关闭了客户端，到时间需要弹出客户端
+        this.ipcMain.on('init-class', (_event, timeout) => {
+            this.initTimer = setTimeout(() => {
+                clearTimeout(this.initTimer);
+                this.win.webContents.send('process_event', 'init-class');
+            }, timeout);
+        });
+
+        this.ipcMain.on('init-class-response', (_event, inLoginPage) => {
+            if (inLoginPage) {
+                this.win.show();
+                global.isAppHide = false;
+            }
+        });
+
+        this.ipcMain.on('class-start', (_event, timeout) => {
             this.handle(timeout);
         });
 
-         this.ipcMain.on('class-end', (event, timeout) => {
+        this.ipcMain.on('class-end', (_event, timeout) => {
             this.handle(timeout, 'class-end');
         });
 
-         this.ipcMain.on('class-delay', (event, timeout) => {
+        this.ipcMain.on('class-delay', (_event, timeout) => {
             this.handle(timeout);
         });
     }

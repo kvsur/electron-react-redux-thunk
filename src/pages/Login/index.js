@@ -3,6 +3,7 @@ import { Form, Button, Input, message, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
+import Bridge from '../../utils/bridge';
 import { login } from '../../thunk/login';
 import Layout from '../../components/Layout';
 import TYPES from '../../constants/COMMON_ACTION_TYPES';
@@ -35,6 +36,18 @@ class Login extends Component {
                 pageTitle: '登录',
             }
         });
+    }
+
+    componentDidMount() {
+        Bridge.on('init-class', this.initClass);
+    }
+
+    componentWillUnmount() {
+        Bridge.cancel('init-class', this.initClass);
+    }
+
+    initClass = () => {
+        Bridge.send('init-class-response', 1);
     }
 
     submit = e => {

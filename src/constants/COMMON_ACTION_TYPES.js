@@ -19,6 +19,7 @@ const TYPES =  {
     UPDATE_SUBJECT_ID: Symbol(),
     UPDATE_USER_ACCOUNT: Symbol(),
     UPDATE_CLASS_INFO: Symbol(),
+    UPDATE_CURRENT_SCHEDULE: Symbol(),
 
     // global action
     UPDATE_PAGE_TITLE: Symbol(),

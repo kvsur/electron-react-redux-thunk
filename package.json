@@ -3,7 +3,7 @@
   "description": "teaching_QA analysis system",
   "author": "kvsur",
   "productName": "znkf_teaching",
-  "version": "1.1.11",
+  "version": "1.1.17",
   "private": true,
   "main": "electron/main.js",
   "scripts": {

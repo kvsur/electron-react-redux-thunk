@@ -48,10 +48,12 @@ class Lesson extends Component {
     }
 
     componentDidMount() {
+        Bridge.on('init-class', this.initClass);
         // 规定时间后无任何操作则自动进行开始上课的操作
         this.timer = setInterval(() => {
             const { time } = this.state;
             if (time === 0) {
+                clearInterval(this.timer);
                 this.submit({preventDefault: () => {}});
             } else {
                 this.setState({
@@ -62,9 +64,13 @@ class Lesson extends Component {
     }
 
     componentWillUnmount() {
+        Bridge.cancel('init-class', this.initClass);
         clearInterval(this.timer);
     }
 
+    initClass = () => {
+        Bridge.send('init-class-response', 0);
+    }
 
     back = () => {
         clearInterval(this.timer);
@@ -78,10 +84,19 @@ class Lesson extends Component {
     getNextSchedule = (now, schedules) => {
         const [...tempSchedules] = schedules;
         if (now && tempSchedules && tempSchedules.length) {
-            const nextSchedule = tempSchedules.shift();
-            const { milliesStartTime, milliesEndTime } = nextSchedule;
+            const currentSchedule = tempSchedules.shift();
+            const { milliesStartTime, milliesEndTime } = currentSchedule;
             // 可以提前五分钟上课
-            if ((now >= milliesStartTime || milliesStartTime - now <= (5 * 60 * 1000)) && now < milliesEndTime) return nextSchedule;
+            if ((now >= milliesStartTime || milliesStartTime - now <= (5 * 60 * 1000)) && now < milliesEndTime) {
+                const { dispatch } = this.props;
+                dispatch({
+                    type: TYPES.UPDATE_CURRENT_SCHEDULE,
+                    payload: {
+                        currentSchedule
+                    }
+                });
+                return currentSchedule;
+            };
             return this.getNextSchedule(now, tempSchedules);
         }
         return null;
@@ -111,15 +126,19 @@ class Lesson extends Component {
                     const now = new Date().getTime();
 
                     // get next schedule item 
-                    const nextSchedule = this.getNextSchedule(now, schedule);
-                    if (nextSchedule) {
-                        const { scheduleTimeId, milliesEndTime, milliesStartTime } = nextSchedule;
+                    const currentSchedule =  this.getNextSchedule(now, schedule);
+                    if (currentSchedule) {
+                        const { scheduleTimeId, milliesEndTime, milliesStartTime } = currentSchedule;
 
                         this.classStart(milliesEndTime - now);
                         await dispatch(startClass({time: now, subjectId, userAccount, scheduleTimeId}));
+                        console.log('----------------------上课日志输出----------------------');
+                        console.log('上课实际时间：', new Date(now).toLocaleString('zh-CN', {hour12: false}));
+                        console.log('上课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+                        console.log('作息表对应ID：', scheduleTimeId);
                         changeRoute = 1;
                     } else {
-                        throw new Error('操作失败，未查询为到当前时间段作息表');
+                        throw new Error('操作失败，当前时间为非上课时间');
                     }
                 } catch (e) {
                     message.error(e.message || e);

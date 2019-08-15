@@ -30,6 +30,13 @@ export default function reducer(state, action) {
                 subjectId: subjectList[0].subjectId,
             };
         }
+        case TYPES.UPDATE_CURRENT_SCHEDULE: {
+            const { currentSchedule } = payload;
+            return {
+                ...state,
+                currentSchedule,
+            };
+        }
         case TYPES.UPDATE_SCHEDULE: {
             const { schedule } = payload;
             return {

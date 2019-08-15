@@ -36,6 +36,7 @@ class Ending extends Component {
         loading: false,
         withinTime: true,
         time: NO_OPRATION_TIME,
+        showDelay: true,
     };
 
     componentWillMount() {
@@ -54,11 +55,17 @@ class Ending extends Component {
         //         ipcRenderer.send('show');
         //     }, 10000);
         // }
+        Bridge.on('init-class', this.initClass);
         Bridge.on('class-will-end', this.handleClassEnd);
     }
 
     componentWillUnmount() {
+        Bridge.cancel('init-class', this.initClass);
         Bridge.cancel('class-will-end', this.handleClassEnd);
+    }
+
+    initClass = () => {
+        Bridge.send('init-class-response', 0);
     }
 
     handleClassEnd = () => {
@@ -86,6 +93,7 @@ class Ending extends Component {
         clearInterval(this.timer);
         this.setState({
             withinTime: true,
+            showDelay: false,
         });
         Bridge.send('class-delay', (5 * 60 * 1000));
     }
@@ -99,7 +107,7 @@ class Ending extends Component {
         const [...tempSchedules] = schedules;
         if (now && tempSchedules && tempSchedules.length) {
             const nextSchedule = tempSchedules.shift();
-            const { milliesStartTime, milliesEndTime } = nextSchedule;
+            const { milliesStartTime } = nextSchedule;
             if (now < milliesStartTime) return nextSchedule;
             return this.getNextSchedule(now, tempSchedules);
         }
@@ -117,20 +125,27 @@ class Ending extends Component {
         });
         let changeRoute = 0;
         try {
-            const { dispatch, subjectId, userAccount, schedule } = this.props;
-            const now = new Date().getTime();
+            const { dispatch, subjectId, userAccount, schedule, currentSchedule } = this.props;
+            const time = new Date().getTime();
 
-            const nextSchedule = this.getNextSchedule(now, schedule);
+            const nextSchedule = this.getNextSchedule(time, schedule);
+
+            console.log('----------------------下课日志输出----------------------');
             
             if (nextSchedule) {
-                const { scheduleTimeId, milliesEndTime, milliesStartTime } = nextSchedule;
-            
-                this.classEnd(now - milliesStartTime);
-                await dispatch(endClass({time: now, subjectId, userAccount, scheduleTimeId}));
-                changeRoute = 1;
+                const { milliesStartTime } = nextSchedule;
+                this.classEnd(time - milliesStartTime);
+                console.log('下一节课上课时间:', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
             }
+        
+            const { scheduleTimeId, milliesStartTime } = currentSchedule;
+            await dispatch(endClass({time, subjectId, userAccount, scheduleTimeId}));
+            console.log('下课实际时间：', new Date(time).toLocaleString('zh-CN', {hour12: false}));
+            console.log('下课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+            console.log('作息表对应ID：', scheduleTimeId);
+            changeRoute = 1;
         } catch (e) {
-            message.error(e);
+            message.error(e.message || e);
         } finally {
             this.setState({
                 loading: false,
@@ -143,14 +158,17 @@ class Ending extends Component {
     render() {
         // const { models, loading } = this.props;
         const { form: { getFieldDecorator }, className, subjectId, subjectList } = this.props;
-        const { loading, withinTime, time } = this.state;
+        const { loading, withinTime, time, showDelay } = this.state;
+
+        const delay = showDelay ? <Button type="default" onClick={this.delay}>延迟5分钟</Button> : null;
+        
         const footer = (
             <div>
                 {
                     withinTime ?
                         <Button type="default" onClick={this.justDoIt}>继续上课</Button>
                         :
-                        <Button type="default" onClick={this.delay}>延迟5分钟</Button>
+                        delay
                 }
                 <Button type="primary" onClick={this.submit} loading={loading} style={{ marginLeft: '20px' }}>确认下课</Button>
             </div>

@@ -43,10 +43,10 @@ export const getSchedule = () => {
 
                 const now = new Date().getTime();
 
-                const firstSchedule = schedule.find(({milliesStartTime}) => now < milliesStartTime);
+                const firstSchedule = schedule.find(({milliesStartTime}) => (now < milliesStartTime));
 
                 if (firstSchedule) {
-                    Bridge.send('class-end', firstSchedule.milliesStartTime - now);
+                    Bridge.send('init-class', firstSchedule.milliesStartTime - now);
                 }
 
                 // const startTimeList =[], endTimeList = [];
@@ -76,6 +76,7 @@ export const getSchedule = () => {
                         schedule,
                     }
                 });
+                console.log('拉取作息表成功', schedule);
                 return Promise.resolve();
             }
             throw new Error(res.message);
