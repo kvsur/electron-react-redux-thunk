@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 // import { connect } from 'react-redux';
 import Bridge from '../../utils/bridge';
 import { Modal, Progress, message } from 'antd';
+import history from '../../router-dom/history';
 // import TYPES from '../../constants/COMMON_ACTION_TYPES';
 
 // @connect()
@@ -27,6 +28,7 @@ class Updater extends Component {
 
   componentDidMount() {
     Bridge.send('check-update');
+    history.push('/login');
   }
 
   componentWillUnmount() {

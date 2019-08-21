@@ -154,56 +154,58 @@ function createWindow() {
     // schedule 
     new Schedule(ipcMain, win);
 
-    tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: '重启服务[DEV]',
-            click: function () {
-                // updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
-                win.show();
-                restartJava(rootPath, win.webContents);
-            }
-        },
-        {
-            label: '开发工具[DEV]',
-            // icon: path.join(__dirname, './icons/udpate16.png'),
-            click: function () {
-                win.show();
-                win.webContents.openDevTools();
-            }
-        },
-        {
-            label: '版本信息',
-            icon: path.join(__dirname, './icons/versions16.png'),
-            click: function () {
-                win.show();
-                process_emiter('version-info', {appVersion: app.getVersion()});
-            }
-        },
-        {
-            label: '检测更新',
-            icon: path.join(__dirname, './icons/udpate16.png'),
-            click: function () {
-                win.show();
-                hanldeUpateFromRender();
-            }
-        },
-        {
-            label: '退出',
-            icon: path.join(__dirname, './icons/exit16.png'),
-            click: function () {
-                clearInterval(restartTimer);
-                app.quit();
-            }
-        },
-    ]);
-    tray.setToolTip('教育语音分析系统');
-    tray.setContextMenu(contextMenu);
+    if (process.env.APP_PLATFORM === 'win') {
+        tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: '重启服务[DEV]',
+                click: function () {
+                    // updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
+                    win.show();
+                    restartJava(rootPath, win.webContents);
+                }
+            },
+            {
+                label: '开发工具[DEV]',
+                // icon: path.join(__dirname, './icons/udpate16.png'),
+                click: function () {
+                    win.show();
+                    win.webContents.openDevTools();
+                }
+            },
+            {
+                label: '版本信息',
+                icon: path.join(__dirname, './icons/versions16.png'),
+                click: function () {
+                    win.show();
+                    process_emiter('version-info', {appVersion: app.getVersion()});
+                }
+            },
+            {
+                label: '检测更新',
+                icon: path.join(__dirname, './icons/udpate16.png'),
+                click: function () {
+                    win.show();
+                    hanldeUpateFromRender();
+                }
+            },
+            {
+                label: '退出',
+                icon: path.join(__dirname, './icons/exit16.png'),
+                click: function () {
+                    clearInterval(restartTimer);
+                    app.quit();
+                }
+            },
+        ]);
+        tray.setToolTip('教育语音分析系统');
+        tray.setContextMenu(contextMenu);
 
-    tray.on('click', () => {
-        win.show();
-        global.isAppHide = false;
-    });
+        tray.on('click', () => {
+            win.show();
+            global.isAppHide = false;
+        });
+    }
 
     updateHandle();
 }

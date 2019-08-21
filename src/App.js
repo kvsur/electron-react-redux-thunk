@@ -12,7 +12,8 @@ import styles from './App.less';
 import Header from './components/Header';
 import Updater from './components/Update';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'development';
+const isPlatformWin = process.env.APP_PLATFORM === 'win';
 
 class App extends Component {
   render() {
@@ -20,7 +21,7 @@ class App extends Component {
       <Provider store={store}>
         <main className={styles.main}>
           <Router history={history}>
-            {isDevelopment ? null : <Header />}
+            {isProduction && isPlatformWin ? <Header /> : null}
             <Route path="/" exact component={Login} />
             <Route path="/login" component={Login} />
             <Route path="/lesson" component={Lesson} />

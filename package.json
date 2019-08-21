@@ -9,12 +9,16 @@
   "scripts": {
     "server": "nodemon serve/index.js",
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "start:mac": "APP_PLATFORM=mac  node scripts/start.js",
+    "build": "cross-env APP_PLATFORM=win node scripts/build.js",
+    "build:mac": "APP_PLATFORM=mac node scripts/build.js",
     "test": "node scripts/test.js",
-    "start:app": "electron .",
-    "app": "yarn start:app",
-    "build:app": "electron-builder --win --ia32 --dir --projectDir=./",
-    "build:product": "electron-builder --projectDir=./"
+    "mac": "APP_PLATFORM=mac electron .",
+    "win": "cross-env APP_PLATFORM=win electron .",
+    "app": "cross-env APP_PLATFORM=win electron-builder --w --ia32 --dir --projectDir=./",
+    "app:mac": "cAPP_PLATFORM=mac electron-builder --m --ia32 --dir --projectDir=./",
+    "product": "cross-env APP_PLATFORM=win electron-builder --projectDir=./",
+    "product:mac": "APP_PLATFORM=mac electron-builder --projectDir=./ "
   },
   "build": {
     "appId": "com.znkf.teaching",

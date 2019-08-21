@@ -7,7 +7,7 @@ import { Icon, message } from 'antd';
 import styles from './index.less';
 import max from '../../assets/max';
 import middle from '../../assets/middle';
-import history from '../../router-dom/history';
+// import history from '../../router-dom/history';
 import Bridge from '../../utils/bridge';
 
 // const electron = window.electron;
@@ -32,7 +32,7 @@ class Header extends Component {
 
     componentDidMount() {
         // console.log(this.props);
-        history.push('/login');
+        // history.push('/login');
         // ipcRenderer.on('tray-click', e => {
         //     message.info('客户端已恢复展示');
         // });
