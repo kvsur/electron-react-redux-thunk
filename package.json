@@ -3,7 +3,7 @@
   "description": "teaching_QA analysis system",
   "author": "kvsur",
   "productName": "znkf_teaching",
-  "version": "1.1.17",
+  "version": "1.2.6",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "start:app": "electron .",
+    "app": "yarn start:app",
     "build:app": "electron-builder --win --ia32 --dir --projectDir=./",
     "build:product": "electron-builder --projectDir=./"
   },
