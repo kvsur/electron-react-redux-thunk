@@ -208,7 +208,7 @@ class Ending extends Component {
                         }
                     </Item>
                     {
-                        !withinTime ? <span>请确认下课，若无操作，录音将在{`${time}`}s 后自动关闭。</span> : null
+                        !withinTime ? <span style={{color: '#fff'}}>请确认下课，若无操作，录音将在{`${time}`}s 后自动关闭。</span> : null
                     }
                 </Form>
             </Layout>

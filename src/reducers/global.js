@@ -11,6 +11,13 @@ export default function reducer(state, action) {
                 pageTitle,
             };
         }
+        case TYPES.UPDATE_APP_VERSION: {
+            const { appVersion } = payload;
+            return {
+                ...state,
+                appVersion,
+            };
+        }
         default: {
             return {
                 ...state,

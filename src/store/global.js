@@ -1,3 +1,4 @@
 export default {
     pageTitle: '',
+    appVersion: '',
 };

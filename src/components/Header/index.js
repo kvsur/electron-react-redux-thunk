@@ -20,6 +20,7 @@ import Bridge from '../../utils/bridge';
 
 @connect(({global}) => ({
     pageTitle: global.pageTitle,
+    version: global.appVersion,
 }))
 class Header extends Component {
     // static propTypes = {
@@ -62,15 +63,15 @@ class Header extends Component {
 
     render() {
         const { isMax } = this.state;
-        const { pageTitle } = this.props;
+        const { version } = this.props;
 
         return (
             <header className={styles['app-header']}>
-                <div className={styles.title}><span className={styles.icon} />教育语音分析系统{pageTitle? `-${pageTitle}` : pageTitle}</div>
+                <div className={styles.title}>教育语音{version ? `-${version}` : ''}</div>
                 <div className={styles.btns}>
-                    <Icon type="minus" onClick={() => {this.toggle('close')}} />
-                    <Icon component={isMax ? middle : max} onClick={() => {this.toggle('max')}} />
-                    <Icon type="close" onClick={() => {this.toggle('close')}} />
+                    <Icon type="minus" onClick={() => {this.toggle('close')}} title="最小化窗口" />
+                    <Icon component={isMax ? middle : max} onClick={() => {this.toggle('max')}} title={isMax ? '' : '最大化窗口'} />
+                    <Icon type="close" onClick={() => {this.toggle('close')}} title="关闭窗口" />
                 </div>
             </header>
         )

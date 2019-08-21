@@ -23,5 +23,6 @@ const TYPES =  {
 
     // global action
     UPDATE_PAGE_TITLE: Symbol(),
+    UPDATE_APP_VERSION: Symbol(),
 };
 export default TYPES;

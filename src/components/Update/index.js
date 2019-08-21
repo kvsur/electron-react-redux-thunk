@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+// import { connect } from 'react-redux';
 import Bridge from '../../utils/bridge';
 import { Modal, Progress, message } from 'antd';
+// import TYPES from '../../constants/COMMON_ACTION_TYPES';
 
+// @connect()
 class Updater extends Component {
   state = {
     showModal: false,
@@ -18,6 +21,8 @@ class Updater extends Component {
     Bridge.on('update-close', this.updateClose);
     Bridge.on('update-available', this.updateAvailable);
     Bridge.on('service-tip', this.serviceTip);
+    Bridge.on('service-log', this.serviceLog);
+    Bridge.on('version-info', this.showVersionInfo);
   }
 
   componentDidMount() {
@@ -32,11 +37,40 @@ class Updater extends Component {
     Bridge.cancel('update-close', this.updateClose);
     Bridge.cancel('update-available', this.updateAvailable);
     Bridge.cancel('service-tip', this.serviceTip);
+    Bridge.cancel('service-log', this.serviceLog);
+    Bridge.cancel('version-info', this.showVersionInfo);
+  }
+
+  showVersionInfo = ({appVersion}) => {
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: TYPES.UPDATE_APP_VERSION,
+    //   payload: {
+    //     appVersion
+    //   }
+    // });
+    Modal.info({
+      title: '版本信息',
+      width: 235,
+      content: (
+        <span>教育语音-{appVersion}</span>
+      ),
+      okText: '关闭',
+      onOk: () => {},
+      okButtonProps: {
+        size: 'small',
+        type: 'default'
+      }
+    });
   }
 
   serviceTip = ({message:msg, type}) => {
     message[type](msg);
     console.log(msg);
+  }
+
+  serviceLog = log => {
+    console.log(log);
   }
 
   checkUpateStart = () => {

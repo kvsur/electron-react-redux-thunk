@@ -195,7 +195,7 @@ class Lesson extends Component {
                             )
                         }
                     </Item>
-                    <span>请选择科目，若无操作，课程记录将在{`${time}`}s 后自动开启。</span>
+                    <span  style={{color: '#fff'}}>请选择科目，若无操作，课程记录将在{`${time}`}s 后自动开启。</span>
                 </Form>
             </Layout>
         )

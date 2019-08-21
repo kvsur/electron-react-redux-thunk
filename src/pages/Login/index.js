@@ -94,7 +94,7 @@ class Login extends Component {
                             getFieldDecorator('userAccount', {
                                 rules: [{ required: true, message: '登录名为空' }],
                             })(
-                                <Input prefix={<Icon type="user" />} placeholder="请输入登录名" onPressEnter={this.submit} />
+                                <Input prefix={<Icon type="user" style={{color: '#fff'}} />} placeholder="请输入登录名" onPressEnter={this.submit} />
                             )
                         }
                     </Item>
@@ -103,7 +103,7 @@ class Login extends Component {
                             getFieldDecorator('password', {
                                 rules: [{ required: true, message: '密码为空' }],
                             })(
-                                <Input prefix={<Icon type="lock" />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
+                                <Input prefix={<Icon type="lock"  style={{color: '#fff'}} />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
                             )
                         }
                     </Item>

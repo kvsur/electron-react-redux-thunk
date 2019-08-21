@@ -22,3 +22,16 @@ code {
   background-color: #1876FF;
   border-color: #1876FF;
 }
+/* 
+.ant-btn {
+  border-radius: 10px 10px 10px 0;
+} */
+
+.ant-input {
+  color: rgb(251, 251, 251);
+  background-color: rgba(0, 0, 0, 0.1);
+  /* border-radius: 10px 10px 10px 0; */
+}
+.has-error .ant-input-affix-wrapper .ant-input, .has-error .ant-input-affix-wrapper .ant-input:focus, .has-error .ant-input-affix-wrapper .ant-input:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
