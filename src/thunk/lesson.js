@@ -11,11 +11,11 @@ export const getClassInfo = () => {
                     type: TYPES.UPDATE_CLASS_INFO,
                     payload: {...res.data},
                 });
-                return Promise.resolve();
+                return Promise.resolve(1);
             }
             throw new Error(res.message);
         } catch(e) {
-            return Promise.reject(e.message);
+            return Promise.reject(0);
         }
     }
 }

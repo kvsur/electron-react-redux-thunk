@@ -27,7 +27,8 @@ class Updater extends Component {
   }
 
   componentDidMount() {
-    Bridge.send('check-update');
+    // 开启自动更新
+    // Bridge.send('check-update');
     history.push('/login');
   }
 

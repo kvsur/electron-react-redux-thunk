@@ -66,7 +66,7 @@ class Login extends Component {
                     changRoute = 1;
                 } catch(e) {
                     console.error(e);
-                    message.error('登录失败');
+                    message.error(e);
                 } finally {
                     this.setState({
                         loading: false,
