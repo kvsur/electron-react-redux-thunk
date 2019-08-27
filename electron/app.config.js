@@ -1,11 +1,7 @@
 const path = require('path');
 
-const iconPath = process.env.APP_PLATFORM === 'win' ? '../build_web/favicon.ico' : '../build_web/favicon.icns';
-
-console.log(iconPath);
-
 module.exports = {
-    icon: path.join(__dirname, iconPath),
+    icon: path.join(__dirname, '../build_web/favicon.ico'),
     width: 600,
     minWidth: 600,
     // maxWidth: 600,
