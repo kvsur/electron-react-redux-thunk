@@ -3,26 +3,22 @@
   "description": "teaching_QA analysis system",
   "author": "kvsur",
   "productName": "znkf_teaching",
-  "version": "1.2.6",
+  "version": "1.2.10",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
     "server": "nodemon serve/index.js",
     "start": "node scripts/start.js",
-    "start:mac": "APP_PLATFORM=mac  node scripts/start.js",
-    "build": "cross-env APP_PLATFORM=win node scripts/build.js",
-    "build:mac": "APP_PLATFORM=mac node scripts/build.js",
+    "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "mac": "APP_PLATFORM=mac electron .",
-    "win": "cross-env APP_PLATFORM=win electron .",
-    "app": "cross-env APP_PLATFORM=win electron-builder --w --ia32 --dir --projectDir=./",
-    "app:mac": "cAPP_PLATFORM=mac electron-builder --m --ia32 --dir --projectDir=./",
-    "product": "cross-env APP_PLATFORM=win electron-builder --projectDir=./",
-    "product:mac": "APP_PLATFORM=mac electron-builder --projectDir=./ "
+    "win": "electron .",
+    "app": "electron-builder --w --ia32 --dir --projectDir=./",
+    "product": "electron-builder --projectDir=./"
   },
   "build": {
     "appId": "com.znkf.teaching",
     "productName": "znkf_teaching",
+    "asar": false,
     "files": [
       "build_web/**/*",
       "jar/**/*",
@@ -62,6 +58,8 @@
   },
   "dependencies": {
     "antd": "^3.20.0",
+    "decompress": "^4.2.0",
+    "decompress-unzip": "^4.0.1",
     "electron-updater": "^4.1.2",
     "isomorphic-fetch": "^2.2.1",
     "less": "^3.9.0",
@@ -71,7 +69,8 @@
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "winreg": "^1.2.4"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",
