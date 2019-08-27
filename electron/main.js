@@ -1,18 +1,20 @@
-const { ipcMain, app, BrowserWindow, Tray, Menu } = require('electron');
+const { ipcMain, app, BrowserWindow, Tray, Menu, dialog } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const appConfig = require('./app.config');
 const Schedule = require('./schedule');
-// const updateJavaService = require('./service.update');
+const updateJavaService = require('./service.update');
 const restartJava = require('./restart.java');
+const Boot = require('./boot');
 const { JAVA_SERVER_ROOT_NAME, RESTART_TIME_INTERVAL } = require('./constant');
 
 const feedOption = {
-    // "provider": "znkf",
+    "provider": "generic",
     "url": 'http://172.19.80.224/packages/docker_images/teaching_package/'
 };
 
-const rootPath = path.join(__dirname, `../../../../${JAVA_SERVER_ROOT_NAME}`);
+const rootPath = path.join(__dirname, `../../../../`);
+const servicePath = `${rootPath}${JAVA_SERVER_ROOT_NAME}`;
 
 let restartTimer = null;
 
@@ -56,19 +58,14 @@ function updateHandle() {
     autoUpdater.on('update-not-available', function (info) {
         sendUpdateMessage(message.updateNotAva);
         process_emiter('update-close', info);
-        // 更新java 服务
-        // updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
     });
 
     // 更新下载进度事件
     autoUpdater.on('download-progress', function (progressObj) {
         process_emiter('download-progress', progressObj);
-    })
+    });
+
     autoUpdater.on('update-downloaded', async function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
-
-        // 更新java 服务
-        // await updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), true);
-
         ipcMain.on('update-now', (e, arg) => {
             clearInterval(restartTimer);
             console.log("开始更新");
@@ -91,15 +88,24 @@ function sendUpdateMessage(text) {
     process_emiter('update-message', text);
 }
 
-function createWindow() {
-    // 创建浏览器窗口。
+async function createWindow() {
     win = new BrowserWindow({ ...appConfig });
+    await updateJavaService({
+        rootPath,
+        // emitor: win.webContents, 
+        dialog,
+        userDataPath: app.getPath('userData'),
+        appPath: app.getAppPath(),
+        version: app.getVersion(),
+        needUpdateNow: true
+    });
+
+    await restartJava({ servicePath, firstTime: 1 });
+    // 创建浏览器窗口。
 
     // 在此处进行后台服务的启动[java]
-    // dialog.showMessageBox(win, {type: 'info', message: rootPath});
-    restartJava(rootPath, win.webContents);
     restartTimer = setInterval(() => {
-        restartJava(rootPath, win.webContents);
+        restartJava({ servicePath, emitor: win.webContents });
     }, RESTART_TIME_INTERVAL);
 
     // win.setMenu(null);
@@ -154,58 +160,86 @@ function createWindow() {
     // schedule 
     new Schedule(ipcMain, win);
 
-    if (process.env.APP_PLATFORM === 'win') {
-        tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
-        const contextMenu = Menu.buildFromTemplate([
-            {
-                label: '重启服务[DEV]',
-                click: function () {
-                    // updateJavaService(win.webContents, app.getPath('userData'), app.getAppPath(), app.getVersion(), false);
-                    win.show();
-                    restartJava(rootPath, win.webContents);
-                }
-            },
-            {
-                label: '开发工具[DEV]',
-                // icon: path.join(__dirname, './icons/udpate16.png'),
-                click: function () {
-                    win.show();
-                    win.webContents.openDevTools();
-                }
-            },
-            {
-                label: '版本信息',
-                icon: path.join(__dirname, './icons/versions16.png'),
-                click: function () {
-                    win.show();
-                    process_emiter('version-info', {appVersion: app.getVersion()});
-                }
-            },
-            {
-                label: '检测更新',
-                icon: path.join(__dirname, './icons/udpate16.png'),
-                click: function () {
-                    win.show();
-                    hanldeUpateFromRender();
-                }
-            },
-            {
-                label: '退出',
-                icon: path.join(__dirname, './icons/exit16.png'),
-                click: function () {
-                    clearInterval(restartTimer);
-                    app.quit();
-                }
-            },
-        ]);
-        tray.setToolTip('教育语音分析系统');
-        tray.setContextMenu(contextMenu);
+    tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '重启服务[DEV]',
+            click: function () {
+                win.show();
+                restartJava({ servicePath, emitor: win.webContents, firstTime: 1 });
+            }
+        },
+        {
+            label: '开发工具[DEV]',
+            // icon: path.join(__dirname, './icons/udpate16.png'),
+            click: function () {
+                win.show();
+                win.webContents.openDevTools();
+            }
+        },
+        {
+            label: '设置开机启动',
+            icon: path.join(__dirname, './icons/boot16.png'),
+            click: function () {
+                const appName = app.getName();
+                const appPath = process.execPath;
 
-        tray.on('click', () => {
-            win.show();
-            global.isAppHide = false;
-        });
-    }
+                if (appPath.indexOf(`${appName}.exe`) < 0) {
+                    process_emiter('service-tip', { type: 'error', message: '开发者模式下不能设置自启动' });
+                    return;
+                };
+
+                // dialog.showMessageBox({
+                //     message: appName + appPath
+                // });
+
+                Boot.getAutoStartValue({ name: appName }, (e, r) => {
+                    if (e || r !== appPath) {
+                        Boot.enableAutoStart({ name: appName, file: appPath }, e => {
+                            if (!e) {
+                                process_emiter('service-tip', { type: 'info', message: '已设置自启动' });
+                            } else {
+                                process_emiter('service-tip', { type: 'error', message: '设置自启动失败' });
+                            }
+                        });
+                    } else {
+                        process_emiter('service-tip', { type: 'info', message: '已设置自启动' });
+                    }
+                })
+            }
+        },
+        {
+            label: '版本信息',
+            icon: path.join(__dirname, './icons/versions16.png'),
+            click: function () {
+                win.show();
+                process_emiter('version-info', { appVersion: app.getVersion() });
+            }
+        },
+        {
+            label: '检测更新',
+            icon: path.join(__dirname, './icons/udpate16.png'),
+            click: function () {
+                win.show();
+                hanldeUpateFromRender();
+            }
+        },
+        {
+            label: '退出',
+            icon: path.join(__dirname, './icons/exit16.png'),
+            click: function () {
+                clearInterval(restartTimer);
+                app.quit();
+            }
+        },
+    ]);
+    tray.setToolTip('教育语音分析系统');
+    tray.setContextMenu(contextMenu);
+
+    tray.on('click', () => {
+        win.show();
+        global.isAppHide = false;
+    });
 
     updateHandle();
 }
@@ -219,7 +253,7 @@ if (!gotTheLock) {
         // 当运行第二个实例时,将会聚焦到win这个窗口
         if (win) {
             if (win.isMinimized()) win.restore();
-            
+
             win.show();
         }
     })
