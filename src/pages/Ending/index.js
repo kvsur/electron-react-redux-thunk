@@ -144,6 +144,7 @@ class Ending extends Component {
             console.log('下课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
             console.log('作息表对应ID：', scheduleTimeId);
             changeRoute = 1;
+            this.handleClassEnd = () => {};
         } catch (e) {
             message.error(e.message || e);
         } finally {
