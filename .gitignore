@@ -9,6 +9,7 @@
 /coverage
 
 # production
+/jar
 /build
 /dist
 /client
