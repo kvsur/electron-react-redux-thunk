@@ -66,16 +66,19 @@ router.post('/class/getClassSchedule', (req, res) => {
         "data":
             [
                 {
-                    "studyRestBeginTime": "10:30",
-                    "studyRestEndTime": "11:10"
+                    "scheduleTimeId": "1",
+                    "classStartTime": "10:30",
+                    "classEndTime": "11:10"
                 },
                 {
-                    "studyRestBeginTime": "11:20",
-                    "studyRestEndTime": "12:00"
+                    "scheduleTimeId": "2",
+                    "classStartTime": "11:20",
+                    "classEndTime": "12:00"
                 },
                 {
-                    "studyRestBeginTime": "13:30",
-                    "studyRestEndTime": "14:10"
+                    "scheduleTimeId": "3",
+                    "classStartTime": "18:24",
+                    "classEndTime": "18:56"
                 }
             ]
     });
