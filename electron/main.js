@@ -1,9 +1,11 @@
 const { ipcMain, app, BrowserWindow, Tray, Menu, dialog } = require('electron');
-const { autoUpdater } = require('electron-updater');
+let { autoUpdater } = require('electron-updater');
+const exec = require('child_process').execFile;
 const path = require('path');
+const fs = require('fs');
 const appConfig = require('./app.config');
 const Schedule = require('./schedule');
-const updateJavaService = require('./service.update');
+// const updateJavaService = require('./service.update');
 const restartJava = require('./restart.java');
 const Boot = require('./boot');
 const { JAVA_SERVER_ROOT_NAME, RESTART_TIME_INTERVAL } = require('./constant');
@@ -13,7 +15,7 @@ const feedOption = {
     "url": 'http://172.19.80.224/packages/docker_images/teaching_package/'
 };
 
-const rootPath = path.join(__dirname, `../../../../`);
+const rootPath = path.join(__dirname, `../../../`);
 const servicePath = `${rootPath}${JAVA_SERVER_ROOT_NAME}`;
 
 let restartTimer = null;
@@ -22,6 +24,7 @@ let restartTimer = null;
 // 垃圾回收的时候，window对象将会自动的关闭
 let win;
 let tray;
+let tipForFrontEnd = false;
 
 function process_emiter(...arg) {
     win.webContents.send('process_event', arg[0], ...arg.splice(1));
@@ -29,7 +32,7 @@ function process_emiter(...arg) {
 
 function hanldeUpateFromRender() {
     //执行自动更新检查
-    process_emiter('update-start');
+    // process_emiter('update-start');
     autoUpdater.checkForUpdates();
 }
 
@@ -43,21 +46,38 @@ function updateHandle() {
     // const os = require('os');
 
     autoUpdater.setFeedURL(feedOption.url);
+    autoUpdater.autoDownload = false;
+    autoUpdater.autoInstallOnAppQuit = false;
+    autoUpdater.logger = console;
     autoUpdater.on('error', function (error) {
         // dialog.showErrorBox('error', error)
         sendUpdateMessage(message.error);
-        process_emiter('update-close', error);
+        if (tipForFrontEnd) {
+            process_emiter('update-close', error);
+            tipForFrontEnd = false;
+        }
     });
     autoUpdater.on('checking-for-update', function () {
         sendUpdateMessage(message.checking);
     });
     autoUpdater.on('update-available', async function (info) {
+        const fn = () => {
+            clearInterval(restartTimer);
+            autoUpdater.downloadUpdate();
+            ipcMain.removeListener('download-update', fn);
+        }
+        ipcMain.on('download-update', fn);
+
         sendUpdateMessage(message.updateAva);
-        process_emiter('update-available');
+        process_emiter('update-available-choose', info);
     });
+
     autoUpdater.on('update-not-available', function (info) {
         sendUpdateMessage(message.updateNotAva);
-        process_emiter('update-close', info);
+        if (tipForFrontEnd) {
+            process_emiter('update-not-available', info);
+            tipForFrontEnd = false;
+        }
     });
 
     // 更新下载进度事件
@@ -66,21 +86,17 @@ function updateHandle() {
     });
 
     autoUpdater.on('update-downloaded', async function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
-        ipcMain.on('update-now', (e, arg) => {
+        const fn = (e, arg) => {
             clearInterval(restartTimer);
-            console.log("开始更新");
-            // 更新之前需要做的事情放在这儿
-
             autoUpdater.quitAndInstall();
-        });
+            ipcMain.removeListener('install-now', fn);
+        }
+        ipcMain.on('install-now', fn);
 
-        process_emiter('update-now')
+        process_emiter('update-downloaded-choose')
     });
 
-    ipcMain.on("check-update", () => {
-        //执行自动更新检查
-        hanldeUpateFromRender();
-    })
+    ipcMain.on("check-update", hanldeUpateFromRender);
 }
 
 // 通过main进程发送事件给renderer进程，提示更新信息
@@ -90,15 +106,15 @@ function sendUpdateMessage(text) {
 
 async function createWindow() {
     win = new BrowserWindow({ ...appConfig });
-    await updateJavaService({
-        rootPath,
-        // emitor: win.webContents, 
-        dialog,
-        userDataPath: app.getPath('userData'),
-        appPath: app.getAppPath(),
-        version: app.getVersion(),
-        needUpdateNow: true
-    });
+    // await updateJavaService({
+    //     rootPath,
+    //     // emitor: win.webContents, 
+    //     dialog,
+    //     userDataPath: app.getPath('userData'),
+    //     appPath: app.getAppPath(),
+    //     version: app.getVersion(),
+    //     needUpdateNow: true
+    // });
 
     await restartJava({ servicePath, firstTime: 1 });
     // 创建浏览器窗口。
@@ -178,9 +194,10 @@ async function createWindow() {
             }
         },
         {
-            label: '设置开机启动',
+            label: '开启/关闭自启动',
             icon: path.join(__dirname, './icons/boot16.png'),
             click: function () {
+                win.show();
                 const appName = app.getName();
                 const appPath = process.execPath;
 
@@ -188,10 +205,6 @@ async function createWindow() {
                     process_emiter('service-tip', { type: 'error', message: '开发者模式下不能设置自启动' });
                     return;
                 };
-
-                // dialog.showMessageBox({
-                //     message: appName + appPath
-                // });
 
                 Boot.getAutoStartValue({ name: appName }, (e, r) => {
                     if (e || r !== appPath) {
@@ -203,9 +216,54 @@ async function createWindow() {
                             }
                         });
                     } else {
-                        process_emiter('service-tip', { type: 'info', message: '已设置自启动' });
+                        const fn = (_, choose) => {
+                            if (choose) {
+                                Boot.disableAutoStart({ name: appName, file: appPath }, e => {
+                                    if (!e) {
+                                        process_emiter('service-tip', { type: 'info', message: '已取消设置自启动' });
+                                    } else {
+                                        process_emiter('service-tip', { type: 'error', message: '取消设置自启动失败' });
+                                    }
+                                });
+                            }
+                            ipcMain.removeListener('boot-choose-res', fn);
+                        }
+
+                        ipcMain.on('boot-choose-res', fn);
+
+                        process_emiter('boot-choose');
                     }
                 })
+            }
+        },
+        {
+            label: '卸载客户端',
+            icon: path.join(__dirname, './icons/uninstaller16.png'),
+            click: async function () {
+                win.show();
+                const appName = app.getName();
+                const appPath = process.execPath;
+
+                if (appPath.indexOf(`${appName}.exe`) < 0) {
+                    process_emiter('service-tip', { type: 'error', message: '开发者模式禁止卸载操作' });
+                    return;
+                };
+
+                const uninstallerPath = `${app.getAppPath()}\\uninstaller.bat`;
+
+                try {
+                    const UNINSTExist = await fs.existsSync(uninstallerPath);
+                    if (UNINSTExist) {
+                        const cwd = app.getAppPath();
+                        exec(uninstallerPath, null, { cwd }, (err, res) => {
+                            if (err) {
+                                throw new Error('');
+                            }
+                        });
+                    }
+                } catch(e) {
+                    process_emiter('service-tip', { type: 'error', message: '启动卸载程序失败' });
+                }
             }
         },
         {
@@ -221,6 +279,7 @@ async function createWindow() {
             icon: path.join(__dirname, './icons/udpate16.png'),
             click: function () {
                 win.show();
+                tipForFrontEnd = true;
                 hanldeUpateFromRender();
             }
         },
@@ -261,7 +320,7 @@ if (!gotTheLock) {
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 // 当全部窗口关闭时退出。
 app.on('window-all-closed', () => {
@@ -273,7 +332,7 @@ app.on('window-all-closed', () => {
         clearInterval(restartTimer);
         app.quit()
     }
-})
+});
 
 app.on('activate', () => {
     // 在macOS上，当单击dock图标并且没有其他窗口打开时，
