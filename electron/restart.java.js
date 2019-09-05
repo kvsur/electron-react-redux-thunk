@@ -22,6 +22,7 @@ module.exports = async function ({servicePath, emiter, firstTime}) {
                     throw new Error('执行服务重启脚本失败' + err.message);
                 }else {
                     console.log('--------------------restart java service success----------------');
+                    emiter && emiter.send('process_event', 'service-log', '--------------------restart java service success----------------');
                 }
             });
         } else {
