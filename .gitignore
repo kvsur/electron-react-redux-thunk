@@ -10,6 +10,7 @@
 
 # production
 /jar
+/jarBK
 /build
 /dist
 /client
