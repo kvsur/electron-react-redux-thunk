@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-// import { connect } from 'react-redux';
 import Bridge from '../../utils/bridge';
 import { Modal, Progress, message } from 'antd';
 import history from '../../router-dom/history';
-// import TYPES from '../../constants/COMMON_ACTION_TYPES';
 
 // @connect()
 class Updater extends Component {
@@ -15,43 +13,61 @@ class Updater extends Component {
   };
 
   componentWillMount() {
-    Bridge.on('update-start', this.checkUpateStart);
-    Bridge.on('update-message', this.showUpdateMessage);
-    Bridge.on('download-progress', this.dealProgress);
-    Bridge.on('update-now', this.updateNow);
-    Bridge.on('update-close', this.updateClose);
-    Bridge.on('update-available', this.updateAvailable);
-    Bridge.on('service-tip', this.serviceTip);
-    Bridge.on('service-log', this.serviceLog);
-    Bridge.on('version-info', this.showVersionInfo);
+    
   }
 
   componentDidMount() {
+    Bridge.on('download-progress', this.dealProgress);
+    Bridge.on('update-downloaded-choose', this.updateNow);
+    Bridge.on('update-close', this.updateClose);
+    Bridge.on('update-not-available', this.noNewVersion);
+    Bridge.on('update-available-choose', this.updateAvailable);
+    Bridge.on('service-tip', this.serviceTip);
+    Bridge.on('service-log', this.serviceLog);
+    Bridge.on('version-info', this.showVersionInfo);
+    Bridge.on('boot-choose', this.bootChoose);
     // 开启自动更新
-    // Bridge.send('check-update');
+    Bridge.send('check-update');
     history.push('/login');
   }
 
   componentWillUnmount() {
-    Bridge.cancel('update-start', this.checkUpateStart);
-    Bridge.cancel('update-message', this.showUpdateMessage);
     Bridge.cancel('download-progress', this.dealProgress);
-    Bridge.cancel('update-now', this.updateNow);
+    Bridge.cancel('update-downloaded-choose', this.updateNow);
     Bridge.cancel('update-close', this.updateClose);
-    Bridge.cancel('update-available', this.updateAvailable);
+    Bridge.cancel('update-not-available', this.noNewVersion);
+    Bridge.cancel('update-available-choose', this.updateAvailable);
     Bridge.cancel('service-tip', this.serviceTip);
     Bridge.cancel('service-log', this.serviceLog);
     Bridge.cancel('version-info', this.showVersionInfo);
+    Bridge.cancel('boot-choose', this.bootChoose);
   }
 
-  showVersionInfo = ({appVersion}) => {
-    // const { dispatch } = this.props;
-    // dispatch({
-    //   type: TYPES.UPDATE_APP_VERSION,
-    //   payload: {
-    //     appVersion
-    //   }
-    // });
+  bootChoose = () => {
+    Modal.confirm({
+      title: '操作提示',
+      width: 265,
+      content: (
+        <span>当前已经是自启动模式，是否关闭自启动？</span>
+      ),
+      okText: '关闭',
+      onOk: () => {
+        Bridge.send('boot-choose-res', 1);
+      },
+      okButtonProps: {
+        size: 'small',
+        type: 'danger',
+      },
+      cancelText: '保留',
+      onCancel: () => { },
+      cancelButtonProps: {
+        size: 'small',
+        type: 'default'
+      }
+    });
+  }
+
+  showVersionInfo = ({ appVersion }) => {
     Modal.info({
       title: '版本信息',
       width: 235,
@@ -59,7 +75,9 @@ class Updater extends Component {
         <span>教育语音-{appVersion}</span>
       ),
       okText: '关闭',
-      onOk: () => {},
+      onOk: () => {
+
+      },
       okButtonProps: {
         size: 'small',
         type: 'default'
@@ -67,65 +85,110 @@ class Updater extends Component {
     });
   }
 
-  serviceTip = ({message:msg, type}) => {
+  serviceTip = ({ message: msg, type }) => {
     message[type](msg);
     console.log(msg);
   }
 
   serviceLog = log => {
-    console.log(log);
+    console.warn('service-log-output-warning', log);
   }
 
-  checkUpateStart = () => {
-    this.setState({
-      showModal: true,
+  updateAvailable = ({ version }) => {
+    Modal.confirm({
+      title: '更新提示',
+      width: 265,
+      content: (
+        <span>有新的版本{version}可更新，是否需要更新？</span>
+      ),
+      okText: '更新',
+      onOk: () => {
+        this.setState({
+          showModal: true,
+        });
+        Bridge.send('download-update');
+      },
+      okButtonProps: {
+        size: 'small',
+        type: 'default'
+      },
+      cancelText: '不更新',
+      onCancel: () => { },
+      cancelButtonProps: {
+        size: 'small',
+        type: 'default'
+      }
     });
   }
 
-  updateAvailable = () => {
-    this.setState({
-      isAva: true,
+  noNewVersion = ({ version }) => {
+    Modal.info({
+      title: '更新提示',
+      width: 235,
+      content: (
+        <span>当前无版本更新，{version}为最新版本</span>
+      ),
+      okText: '关闭',
+      onOk: () => { },
+      okButtonProps: {
+        size: 'small',
+        type: 'default'
+      }
     });
   }
 
   updateClose = error => {
-    console.log(error);
-    setTimeout(() => {
-      this.setState({
-        showModal: false,
-      });
-    }, 2000);
+    this.setState({
+      showModal: false,
+    }, () => {
+      message.error('检测更新出错，请您稍后尝试。');
+    });
   }
 
   updateNow = () => {
-    Bridge.send('update-now');
     this.setState({
       showModal: false,
+    }, () => {
+      Modal.confirm({
+        title: '安装提示',
+        width: 265,
+        content: (
+          <span>更新已下载完成，是否立即安装？</span>
+        ),
+        okText: '安装',
+        onOk: () => {
+          Bridge.send('install-now');
+        },
+        okButtonProps: {
+          size: 'small',
+          type: 'default'
+        },
+        cancelText: '取消',
+        onCancel: () => { },
+        cancelButtonProps: {
+          size: 'small',
+          type: 'default'
+        }
+      });
     });
   }
 
   showUpdateMessage = updateText => {
-    // message.warning(msg);
     this.setState({
       updateText,
     });
   }
 
-  dealProgress = progressObj => {
-    // const { transferred, total, bytesPerSecond, } = progressObj;
-    console.log(...progressObj);
-    let { percent } = progressObj;
-    percent = Math.floor(percent * 100) / 100;
-
+  dealProgress = ({ percent }) => {
     this.setState({
       percent,
     });
   }
 
   render() {
-    const { showModal, updateText, percent, isAva } = this.state;
+    const { showModal, percent } = this.state;
     return (
-        <Modal
+      <Modal
         visible={showModal}
         title={null}
         width={200}
@@ -134,20 +197,17 @@ class Updater extends Component {
         keyboard={false}
         maskClosable={false}
         centered
-        >
-        <span style={{ color: '#fb7b1c' }}>{updateText}</span>
-        {
-            isAva ? 
-            <Progress
-            strokeColor={{
-                '0%': '#f3bbbb',
-                '100%': '#87d068',
-            }}
-            percent={percent}
-            size="small"
-            /> : null
-        }
-        </Modal>
+      >
+        <span style={{ color: '#fb7b1c' }}>正在下载更新...</span>
+        <Progress
+          strokeColor={{
+            '0%': '#f3bbbb',
+            '100%': '#87d068',
+          }}
+          percent={+(percent.toFixed(2))}
+          size="small"
+        />
+      </Modal>
     );
   }
 }
