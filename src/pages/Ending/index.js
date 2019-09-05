@@ -8,10 +8,6 @@ import Bridge from '../../utils/bridge';
 import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
 import { endClass } from '../../thunk/lesson';
 
-// const electron = window.electron;
-// const { ipcRenderer } = electron || {};
-
-
 const formItemLayout = {
     labelCol: {
         xs: { span: 8 },
@@ -32,6 +28,8 @@ const Item = Form.Item;
 class Ending extends Component {
     timer = null;
 
+    canSubmit = true; // 能否继续提交操作
+
     state = {
         loading: false,
         withinTime: true,
@@ -50,11 +48,6 @@ class Ending extends Component {
     }
 
     componentDidMount() {
-        // if (ipcRenderer) {
-        //     setTimeout(() => {
-        //         ipcRenderer.send('show');
-        //     }, 10000);
-        // }
         Bridge.on('init-class', this.initClass);
         Bridge.on('class-will-end', this.handleClassEnd);
     }
@@ -73,8 +66,13 @@ class Ending extends Component {
             withinTime: false,
         });
         this.timer = setInterval(() => {
+            if (!this.canSubmit) {
+                clearInterval(this.timer);
+                return;
+            }
             const { time } = this.state;
             if (time === 0) {
+                clearInterval(this.timer);
                 this.submit({preventDefault: () => {}});
             } else {
                 this.setState({
@@ -117,9 +115,6 @@ class Ending extends Component {
     submit = async e => {
         clearInterval(this.timer);
         e.preventDefault();
-        // if (ipcRenderer) {
-        //     ipcRenderer.send('close');
-        // }
         this.setState({
             loading: true,
         });
@@ -136,15 +131,18 @@ class Ending extends Component {
                 const { milliesStartTime } = nextSchedule;
                 this.classEnd(time - milliesStartTime);
                 console.log('下一节课上课时间:', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+            } else {
+                console.log('*****************接下来没有上课作息表*****************');
             }
         
-            const { scheduleTimeId, milliesStartTime } = currentSchedule;
+            const { scheduleTimeId, milliesStartTime, milliesEndTime } = currentSchedule;
             await dispatch(endClass({time, subjectId, userAccount, scheduleTimeId}));
+            this.canSubmit = false; // 成功下课之后不能继续提交了
             console.log('下课实际时间：', new Date(time).toLocaleString('zh-CN', {hour12: false}));
-            console.log('下课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+            console.log('上课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+            console.log('下课对应作息表时间', new Date(milliesEndTime).toLocaleString('zh-CN', {hour12: false}));
             console.log('作息表对应ID：', scheduleTimeId);
             changeRoute = 1;
-            this.handleClassEnd = () => {};
         } catch (e) {
             message.error(e.message || e);
         } finally {
@@ -183,8 +181,6 @@ class Ending extends Component {
                                 rules: [{ required: true, message: '未选择班级' }],
                                 initialValue: className,
                             })(
-                                // <Input prefix={<Icon type="user" />} placeholder="选择班级" onPressEnter={this.submit} />
-                                // <Select placeholder="选择班级" disabled></Select>
                                 <Input placeholder="班级" disabled />
                             )
                         }

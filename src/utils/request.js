@@ -4,6 +4,7 @@ import { stringify } from 'qs';
 import { notification } from 'antd';
 
 const BASE_API = 'http://127.0.0.1:8720/teaching';
+// const BASE_API = 'http://127.0.0.1:1024/teaching';
 
 const codeMessage = {
     200: '服务器成功返回请求的数据。',

@@ -49,27 +49,6 @@ export const getSchedule = () => {
                     Bridge.send('init-class', firstSchedule.milliesStartTime - now);
                 }
 
-                // const startTimeList =[], endTimeList = [];
-                // const now = new Date().getTime();
-                // data.forEach(item => {
-                //     let { classStartTime, classEndTime } = item;
-                //     const today = new Date().toLocaleString('zh-CN', {hour12: false, day: '2-digit', month: '2-digit', year: 'numeric'});
-
-                //     classStartTime = new Date(`${today} ${classStartTime}`).getTime();
-                //     classEndTime = new Date(`${today} ${classEndTime}`).getTime();
-
-                //     // return {
-                //     //     classStartTime,
-                //     //     classEndTime
-                //     // };
-                //     if (classStartTime > now) startTimeList.push(classStartTime);
-                //     if (classEndTime > now) endTimeList.push(classEndTime);
-                // });
-
-                // startTimeList.sort((a, b) => a - b);
-                // endTimeList.sort((a, b) => a - b);
-
-                // console.log(schedule);
                 dispatch({
                     type: TYPES.UPDATE_SCHEDULE,
                     payload: {

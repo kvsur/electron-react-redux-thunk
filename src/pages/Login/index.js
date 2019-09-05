@@ -79,7 +79,6 @@ class Login extends Component {
     };
 
     render() {
-        // const { models, loading } = this.props;
         const { getFieldDecorator } = this.props.form;
         const { loading } = this.state;
         return (

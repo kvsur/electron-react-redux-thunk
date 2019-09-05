@@ -10,32 +10,16 @@ import middle from '../../assets/middle';
 // import history from '../../router-dom/history';
 import Bridge from '../../utils/bridge';
 
-// const electron = window.electron;
-
-// const { ipcRenderer } = electron || {};
-
-// import { ipcRenderer } from 'electron';
-
-// const remote = require('electron').remote;
-
 @connect(({global}) => ({
     pageTitle: global.pageTitle,
     version: global.appVersion,
 }))
 class Header extends Component {
-    // static propTypes = {
-    //     prop: PropTypes
-    // }
     state = {
         isMax: false,
     };
 
     componentDidMount() {
-        // console.log(this.props);
-        // history.push('/login');
-        // ipcRenderer.on('tray-click', e => {
-        //     message.info('客户端已恢复展示');
-        // });
         Bridge.on('tray-click', this.handleTrayClick);
         Bridge.on('win-max', this.processToggle);
 
@@ -78,5 +62,4 @@ class Header extends Component {
     }
 }
 
-// export default withRouter(connect()(Header));
 export default withRouter(Header);

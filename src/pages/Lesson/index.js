@@ -8,10 +8,6 @@ import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
 import Bridge from '../../utils/bridge';
 import { startClass } from '../../thunk/lesson';
 
-// const electron = window.electron;
-
-// const { ipcRenderer } = electron || {};
-
 const formItemLayout = {
     labelCol: {
         xs: { span: 8 },
@@ -118,9 +114,6 @@ class Lesson extends Component {
                 this.setState({
                     loading: true,
                 });
-                // if (ipcRenderer) {
-                //     ipcRenderer.send('close');
-                // }
                 let changeRoute = 0;
                 try {
                     const now = new Date().getTime();
@@ -135,6 +128,7 @@ class Lesson extends Component {
                         console.log('----------------------上课日志输出----------------------');
                         console.log('上课实际时间：', new Date(now).toLocaleString('zh-CN', {hour12: false}));
                         console.log('上课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
+                        console.log('下课时间：', new Date(milliesEndTime).toLocaleString('zh-CN', {hour12: false}));
                         console.log('作息表对应ID：', scheduleTimeId);
                         changeRoute = 1;
                     } else {
@@ -154,7 +148,6 @@ class Lesson extends Component {
     };
 
     render() {
-        // const { models, loading } = this.props;
         const { form: { getFieldDecorator }, className, subjectList, subjectId } = this.props;
         const { loading, time } = this.state;
         const footer = (
