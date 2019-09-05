@@ -28,7 +28,7 @@ class Schedule {
         });
 
         this.ipcMain.on('class-start', (_event, timeout) => {
-            this.handle(timeout);
+            this.handle(timeout, 'class-start');
         });
 
         this.ipcMain.on('class-end', (_event, timeout) => {
@@ -36,17 +36,18 @@ class Schedule {
         });
 
         this.ipcMain.on('class-delay', (_event, timeout) => {
-            this.handle(timeout);
+            this.handle(timeout, 'class-delay');
         });
     }
 
-    handle(timeout, isEnd) {
-        console.log(timeout);
+    handle(timeout, action) {
+        this.win.webContents.send('process_event', 'service-log', {action, timeout});
+        // console.log(timeout);
         this.win.hide();
         global.isAppHide = true;
         this.timer = setTimeout(() => {
             clearTimeout(this.timer);
-            this.win.webContents.send('process_event', isEnd ? 'class-will-start' : 'class-will-end');
+            this.win.webContents.send('process_event', action === 'class-end' ? 'class-will-start' : 'class-will-end');
             this.win.show();
             global.isAppHide = false;
         }, timeout);
