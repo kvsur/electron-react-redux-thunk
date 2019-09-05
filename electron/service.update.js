@@ -11,9 +11,6 @@ const removeDir = require('./removeDir');
 async function isVersionNotEqual(updateJsonFilePath, version, dialog) {
     try {
         const serviceUpdateFile = await fs.readFileSync(updateJsonFilePath).toString();
-        // dialog.showMessageBox({
-        //     message: serviceUpdateFile
-        // });
         const { version: oldVersion } = JSON.parse(serviceUpdateFile);
         return Promise.resolve(version !== oldVersion);
     } catch (e) {
@@ -32,7 +29,7 @@ async function updateJavaService({ rootPath, dialog, userDataPath, appPath, vers
             await execFile(serviceStopBat);
         }
 
-        const updateJsonFilePath = `${userDataPath}\\service_update.json`;
+        const updateJsonFilePath = `${rootPath}\\service_update.json`;
         const versionNotEqual = await isVersionNotEqual(updateJsonFilePath, version, dialog);
         if (versionNotEqual && needUpdateNow) {
             const JDK = `${appPath}\\jar\\${JAVA_JDK_ROOT_NAME}.zip`;
@@ -40,27 +37,29 @@ async function updateJavaService({ rootPath, dialog, userDataPath, appPath, vers
             const service = `${appPath}\\jar\\${JAVA_SERVER_ROOT_NAME}.zip`;
             const serviceExist = await fs.existsSync(service);
             if (JDKExist) {
-                // await fs.copyFileSync(JDK, rootPath);
-                await exec(`xcopy ${JDK} ${rootPath} /E`);
                 const jdkPath = `${rootPath}\\${JAVA_JDK_ROOT_NAME}`;
+                if (await fs.existsSync(`${jdkPath}.zip`)) {
+                    await fs.unlinkSync(`${jdkPath}.zip`);
+                }
+                await exec(`xcopy ${JDK} ${rootPath} /E`);
                 if (await fs.existsSync(jdkPath)) {
-                    // await fs.rmdirSync(jdkPath);
                     await removeDir(jdkPath);
                 }
                 await decompress(`${jdkPath}.zip`, `${rootPath}`, { plugins: [decompressUnzip()] });
                 await fs.unlinkSync(`${jdkPath}.zip`);
-                // await fs.unlinkSync(JDK);
+                await fs.unlinkSync(JDK);
             }
             if (serviceExist) {
-                // await fs.copyFileSync(service, rootPath);
+                if (await fs.existsSync(`${servicePath}.zip`)) {
+                    await fs.unlinkSync(`${servicePath}.zip`);
+                }
                 await exec(`xcopy ${service} ${rootPath} /E`);
                 if (await fs.existsSync(servicePath)) {
-                    // await fs.rmdirSync(servicePath);
                     await removeDir(servicePath);
                 }
                 await decompress(`${servicePath}.zip`, `${rootPath}`, { plugins: [decompressUnzip()] });
                 await fs.unlinkSync(`${servicePath}.zip`);
-                // await fs.unlinkSync(service);
+                await fs.unlinkSync(service);
             }
         }
         await fs.writeFileSync(updateJsonFilePath, `{"version": "${version}", "update": ${needUpdateNow}}`);
