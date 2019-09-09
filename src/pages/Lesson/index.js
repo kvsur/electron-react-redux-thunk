@@ -45,7 +45,6 @@ class Lesson extends Component {
 
     componentDidMount() {
         Bridge.on('init-class', this.initClass);
-        // 规定时间后无任何操作则自动进行开始上课的操作
         this.timer = setInterval(() => {
             const { time } = this.state;
             if (time === 0) {
@@ -82,7 +81,7 @@ class Lesson extends Component {
         if (now && tempSchedules && tempSchedules.length) {
             const currentSchedule = tempSchedules.shift();
             const { milliesStartTime, milliesEndTime } = currentSchedule;
-            // 可以提前五分钟上课
+            // Class can start beforeahead five minutes
             if ((now >= milliesStartTime || milliesStartTime - now <= (5 * 60 * 1000)) && now < milliesEndTime) {
                 const { dispatch } = this.props;
                 dispatch({

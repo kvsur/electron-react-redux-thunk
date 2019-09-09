@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at July 4th, 2019 4:46pm
+ */
 import { combineReducers } from 'redux';
 
 import login from './login';

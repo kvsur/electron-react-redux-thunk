@@ -1,6 +1,6 @@
 /**
- * Created by kvsur at today
- * 主进程处理上课下课的检测操作
+ * Created by LeeCH at July 25th, 2019 1:37pm
+ * 
  */
 class Schedule {
     constructor(ipcMain, win) {
@@ -12,7 +12,6 @@ class Schedule {
     }
 
     init() {
-        // 特殊处理 从后端获取到作息表之后的的处理，如果未到上课时间，用户关闭了客户端，到时间需要弹出客户端
         this.ipcMain.on('init-class', (_event, timeout) => {
             this.initTimer = setTimeout(() => {
                 clearTimeout(this.initTimer);

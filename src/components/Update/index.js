@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at July 31st, 2019 1:45pm
+ */
 import React, { Component } from 'react';
 import Bridge from '../../utils/bridge';
 import { Modal, Progress, message } from 'antd';
@@ -26,7 +29,6 @@ class Updater extends Component {
     Bridge.on('service-log', this.serviceLog);
     Bridge.on('version-info', this.showVersionInfo);
     Bridge.on('boot-choose', this.bootChoose);
-    // 开启自动更新
     Bridge.send('check-update');
     history.push('/login');
   }

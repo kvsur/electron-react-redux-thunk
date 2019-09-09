@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at July 4th, 2019 4:46pm
+ */
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 

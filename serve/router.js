@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at July 23rd, 2019 1:56pm
+ */
 const Express = require('express');
 
 const router = new Express.Router();
@@ -51,10 +54,10 @@ router.post('/class/getInfo', (req, res) => {
         "code": 0,
         "message": "请求成功",
         "data":{
-            "classId":"cvodsglkoert",  //当前教室的编号
-            "className":"四（1）班",  //当前教室的名称
-            "schoolId":"zjhz-xuejunxiaoxue",  //当前教室所在的学校编号
-            "deviceId":"134519998"  //当前教室所在的电脑对应的设备号
+            "classId":"cvodsglkoert", 
+            "className":"四（1）班",  
+            "schoolId":"zjhz-xuejunxiaoxue", 
+            "deviceId":"134519998"
         }
     });
 });

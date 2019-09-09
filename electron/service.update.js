@@ -1,12 +1,14 @@
+/**
+ * Created by LeeCH at August 1st, 2019 7:01pm
+ * This module is *** deprecated *** because update service instead of client installer, no longer user runtime.
+ */
 const fs = require('fs');
 const exec = require('child_process').execSync;
 const execFile = require('child_process').execFileSync;
-// const exec = require('child_process').exec;
 const decompress = require('decompress');
 const decompressUnzip = require('decompress-unzip');
 const { JAVA_SERVER_ROOT_NAME, JAVA_JDK_ROOT_NAME } = require('./constant');
 const removeDir = require('./removeDir');
-// const path = require('path');
 
 async function isVersionNotEqual(updateJsonFilePath, version, dialog) {
     try {
@@ -14,14 +16,12 @@ async function isVersionNotEqual(updateJsonFilePath, version, dialog) {
         const { version: oldVersion } = JSON.parse(serviceUpdateFile);
         return Promise.resolve(version !== oldVersion);
     } catch (e) {
-        // 不存在文件时会抛错
         return Promise.resolve(true);
     }
 }
 
 
 async function updateJavaService({ rootPath, dialog, userDataPath, appPath, version, needUpdateNow }) {
-    // update file or exec update-service opration: ${userDataPath}\service_update.json
     try {
         const servicePath = `${rootPath}\\${JAVA_SERVER_ROOT_NAME}`;
         const serviceStopBat = `${servicePath}\\bin\\stop.bat`;

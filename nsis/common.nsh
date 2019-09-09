@@ -70,6 +70,7 @@ Name "${PRODUCT_NAME}"
 !macro skipPageIfUpdated
   !define UniqueID ${__LINE__}
 
+  # Created by LeeCH at September 5th, 2019 1:30pm
   Function skipPageIfUpdated_${UniqueID}
     ${if} ${isUpdated}
       Abort

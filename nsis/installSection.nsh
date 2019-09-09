@@ -1,3 +1,4 @@
+# Created by LeeCH at September 5th, 2019 1:30pm
 !include installer.nsh
 
 InitPluginsDir

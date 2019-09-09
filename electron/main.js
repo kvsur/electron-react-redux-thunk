@@ -1,4 +1,7 @@
-const { ipcMain, app, BrowserWindow, Tray, Menu, dialog } = require('electron');
+/**
+ * Created by LeeCH at July 17th, 2019 2:53pm
+ */
+const { ipcMain, app, BrowserWindow, Tray, Menu } = require('electron');
 let { autoUpdater } = require('electron-updater');
 const exec = require('child_process').execFile;
 const path = require('path');
@@ -20,9 +23,11 @@ const servicePath = `${rootPath}${JAVA_SERVER_ROOT_NAME}`;
 
 let restartTimer = null;
 
-// 保持对window对象的全局引用，如果不这么做的话，当JavaScript对象被
-// 垃圾回收的时候，window对象将会自动的关闭
+/**
+ * Keep *** window *** Object reference in global context, If not, it will be GC and close.
+ */
 let win;
+
 let tray;
 let tipForFrontEnd = false;
 
@@ -31,18 +36,11 @@ function process_emiter(...arg) {
 }
 
 function hanldeUpateFromRender() {
-    //执行自动更新检查
-    // process_emiter('update-start');
+    // Start update action
     autoUpdater.checkForUpdates();
 }
 
 function updateHandle() {
-    const message = {
-        error: '检查更新出错',
-        checking: '正在检查更新...',
-        updateAva: '正在下载更新...',
-        updateNotAva: '当前版本为最新版本',
-    };
     // const os = require('os');
 
     autoUpdater.setFeedURL(feedOption.url);
@@ -51,14 +49,10 @@ function updateHandle() {
     autoUpdater.logger = console;
     autoUpdater.on('error', function (error) {
         // dialog.showErrorBox('error', error)
-        sendUpdateMessage(message.error);
         if (tipForFrontEnd) {
             process_emiter('update-close', error);
             tipForFrontEnd = false;
         }
-    });
-    autoUpdater.on('checking-for-update', function () {
-        sendUpdateMessage(message.checking);
     });
     autoUpdater.on('update-available', async function (info) {
         const fn = () => {
@@ -68,19 +62,17 @@ function updateHandle() {
         }
         ipcMain.on('download-update', fn);
 
-        sendUpdateMessage(message.updateAva);
         process_emiter('update-available-choose', info);
     });
 
     autoUpdater.on('update-not-available', function (info) {
-        sendUpdateMessage(message.updateNotAva);
         if (tipForFrontEnd) {
             process_emiter('update-not-available', info);
             tipForFrontEnd = false;
         }
     });
 
-    // 更新下载进度事件
+    // Event for download progress 
     autoUpdater.on('download-progress', function (progressObj) {
         process_emiter('download-progress', progressObj);
     });
@@ -99,12 +91,8 @@ function updateHandle() {
     ipcMain.on("check-update", hanldeUpateFromRender);
 }
 
-// 通过main进程发送事件给renderer进程，提示更新信息
-function sendUpdateMessage(text) {
-    process_emiter('update-message', text);
-}
-
 async function createWindow() {
+    // Create main window for client
     win = new BrowserWindow({ ...appConfig });
     // await updateJavaService({
     //     rootPath,
@@ -117,26 +105,21 @@ async function createWindow() {
     // });
 
     await restartJava({ servicePath, firstTime: 1 });
-    // 创建浏览器窗口。
 
-    // 在此处进行后台服务的启动[java]
+    // Protect java process
     restartTimer = setInterval(() => {
         restartJava({ servicePath, emitor: win.webContents });
     }, RESTART_TIME_INTERVAL);
 
     // win.setMenu(null);
 
-    // 加载index.html文件
+    // Load index.html file 
     win.loadFile('build_web/index.html');
 
-    // 打开开发者工具
     // win.webContents.openDevTools();
 
-    // 当 window 被关闭，这个事件会被触发。
+    // It called after window closed
     win.on('closed', () => {
-        // 取消引用 window 对象，如果你的应用支持多窗口的话，
-        // 通常会把多个 window 对象存放在一个数组里面，
-        // 与此同时，你应该删除相应的元素。
         win = null
     });
 
@@ -148,9 +131,6 @@ async function createWindow() {
         process_emiter('win-max', false);
     });
 
-    /**
-     * 监听最大化、最小化、关闭操作
-     */
     ipcMain.on('minus', e => {
         win.minimize();
         global.isAppHide = true;
@@ -309,7 +289,7 @@ if (!gotTheLock) {
     app.quit();
 } else {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
-        // 当运行第二个实例时,将会聚焦到win这个窗口
+        // If user start second instance client, open and show current 'this' window
         if (win) {
             if (win.isMinimized()) win.restore();
 
@@ -317,28 +297,25 @@ if (!gotTheLock) {
         }
     })
 }
-// Electron 会在初始化后并准备
-// 创建浏览器窗口时，调用这个函数。
-// 部分 API 在 ready 事件触发后才能使用。
+
+/**
+ * Do everything about *** window *** after app ready
+ */
 app.on('ready', createWindow);
 
-// 当全部窗口关闭时退出。
 app.on('window-all-closed', () => {
-    // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
-    // 否则绝大部分应用及其菜单栏会保持激活。
+    // Do these for Mac OS
     if (process.platform !== 'darwin') {
-        // 此处需要停止java服务restart 操作
-
+        // Stop protect java processS
         clearInterval(restartTimer);
-        app.quit()
+        app.quit();
     }
 });
 
 app.on('activate', () => {
-    // 在macOS上，当单击dock图标并且没有其他窗口打开时，
-    // 通常在应用程序中重新创建一个窗口。
+    // Do these for Mac OS
     if (win === null) {
-        createWindow()
+        createWindow();
     }
 });
 

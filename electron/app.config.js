@@ -20,8 +20,8 @@ module.exports = {
         devTools: true,
         javascript: true,
         plugins: true,
-        nodeIntegration: false, // 不集成 Nodejs
+        nodeIntegration: false, // Do not integration Nodejs into client
         webSecurity: false,
-        preload: path.join(__dirname, './renderer.js') // 但预加载的 js 文件内仍可以使用 Nodejs 的 API
+        preload: path.join(__dirname, './renderer.js') // preload js file can use NodeJs API normally
     }
 };

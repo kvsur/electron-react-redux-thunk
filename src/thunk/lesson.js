@@ -22,7 +22,6 @@ export const getClassInfo = () => {
 
 export const getSchedule = () => {
     return async dispatch => {
-        // console.log(userAccount, password);
         try {
             const res = await fetchClassSchedule();
             if (res.code === 0) {

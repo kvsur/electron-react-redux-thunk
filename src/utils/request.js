@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import { stringify } from 'qs';
-// import { BrowserRouter as Router } from 'react-router-dom';
 import { notification } from 'antd';
 
 const BASE_API = 'http://127.0.0.1:8720/teaching';
@@ -61,23 +60,15 @@ export default function request(url, option) {
         }
     }
 
-    // let responseTemp = null;
-
     return fetch(newUrl, newOptions)
         .then(checkStatus)
         .then(response => {
-            // responseTemp = response;
             if (response.method === 'DELETE' || response.status === 204) {
                 return response.clone().text();
             }
             return response.clone().json();
         })
         .catch( async e => {
-            // if (responseTemp && e.message && e.message.indexOf('in JSON at position') >= 0) {
-            //     const resultText = await responseTemp.clone().text();
-            //     return JSON.parse(`${resultText.split('}{')[0]}}`);
-            // }
-
             const status = e.name;
             if (status === 403) {
                 return {

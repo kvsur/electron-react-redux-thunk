@@ -1,3 +1,4 @@
+rem Created by LeeCH at September 5th, 2019 1:36pm
 @echo off
 
 REM echo 1-d0 %~d0
@@ -10,8 +11,7 @@ REM echo 4-sdp0 %~sdp0
  
 REM echo 5-cd %cd%
 
-REM PROCESSOR_ARCHITECTURE 是获取系统是 x86 还是 AMD64 的参数，不同的系统是不同的7zip exe 文件进行解压操作
-REM 两个7中的任何一个7都不能删除，涉及到batch 文件转义及参数问题
+REM There are double 7 str, do not remove one of them.
 set unzip=%~dp0%77zip\%PROCESSOR_ARCHITECTURE%.exe
 
 set jdkFilePath=%~dp0%jar\jdk.zip

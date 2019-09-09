@@ -28,7 +28,7 @@ const Item = Form.Item;
 class Ending extends Component {
     timer = null;
 
-    canSubmit = true; // 能否继续提交操作
+    canSubmit = true;
 
     state = {
         loading: false,
@@ -86,7 +86,6 @@ class Ending extends Component {
         Bridge.send('class-end', timeout);
     }
 
-    // 延迟下课
     delay = () => {
         clearInterval(this.timer);
         this.setState({
@@ -96,7 +95,6 @@ class Ending extends Component {
         Bridge.send('class-delay', (5 * 60 * 1000));
     }
 
-    // 继续上课
     justDoIt = () => {
         Bridge.send('close');
     }
@@ -137,7 +135,7 @@ class Ending extends Component {
         
             const { scheduleTimeId, milliesStartTime, milliesEndTime } = currentSchedule;
             await dispatch(endClass({time, subjectId, userAccount, scheduleTimeId}));
-            this.canSubmit = false; // 成功下课之后不能继续提交了
+            this.canSubmit = false; // Can not submit after end class success
             console.log('下课实际时间：', new Date(time).toLocaleString('zh-CN', {hour12: false}));
             console.log('上课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
             console.log('下课对应作息表时间', new Date(milliesEndTime).toLocaleString('zh-CN', {hour12: false}));

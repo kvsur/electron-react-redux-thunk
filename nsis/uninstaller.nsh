@@ -1,3 +1,6 @@
+# Created by licheng at September 5th, 2019 1:30pm
+
+# before uninstall client do uninstall java serive 
 !macro uninstallJavaService
   ${if} ${FileExists} "$INSTDIR\teaching-qa-collect\bin\stop.bat"
     ExecWait "$INSTDIR\teaching-qa-collect\bin\stop.bat"

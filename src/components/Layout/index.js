@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at July 19th, 2019 5:32pm
+ */
 import React from 'react';
 import styles from './index.less';
 

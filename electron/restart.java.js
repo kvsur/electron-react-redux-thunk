@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at August 21st, 2019 3:03pm
+ */
 const exec = require('child_process').execFile;
 const fs = require('fs');
 const { RESTART_JAVA_BASH_PATH } = require('./constant');
@@ -14,7 +17,7 @@ module.exports = async function ({servicePath, emiter, firstTime}) {
         // service-log
         emiter && emiter.send('process_event', 'service-log', { bashPath, date });
 
-        // 判断服务重启脚本是否存在
+        // If this restart batch file exists
         const bashExist = await fs.existsSync(bashPath);
         if (bashExist) {
             exec(bashPath, null, { cwd }, (err, res) => {
@@ -29,10 +32,9 @@ module.exports = async function ({servicePath, emiter, firstTime}) {
             throw new Error(`java服务重启脚本不存在:${bashPath}`);
         }
     } catch (e) {
-        // 向客户端界面提示信息
+        // Show error log to client UI devtool
         emiter && emiter.send('process_event', 'service-log', { message: e.message || e.toString(), bashPath, date });
     } finally {
-        // 不影响接下来操作的执行，直接resolve 'undefined'
         return Promise.resolve();
     }
 }

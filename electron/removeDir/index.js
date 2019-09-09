@@ -1,3 +1,6 @@
+/**
+ * Created by LeeCH at August 27th, 2019 10:26am
+ */
 const fs = require('fs');
 
 async function removeDir(path) {
@@ -8,9 +11,9 @@ async function removeDir(path) {
             files.forEach(async (file, index) => {
                 let curPath = path + "/" + file;
                 if ((await fs.statSync(curPath)).isDirectory()) {
-                    await removeDir(curPath); //递归删除文件夹
+                    await removeDir(curPath); // remove directory recursively
                 } else {
-                    await fs.unlinkSync(curPath); //删除文件
+                    await fs.unlinkSync(curPath); // remove file 
                 }
             });
             await fs.rmdirSync(path);
