@@ -69,24 +69,28 @@ export default function request(url, option) {
             return response.clone().json();
         })
         .catch( async e => {
-            const status = e.name;
+            const status = e.name || 'network.error';
             if (status === 403) {
                 return {
-                    message: '服务端禁止当前操作'
+                    message: '服务端禁止当前操作',
+                    code: status
                 };
             }
             if (status <= 504 && status >= 500) {
                 return {
-                    message: '服务器内部发生错误'
+                    message: '服务器内部发生错误',
+                    code: status
                 };
             }
             if (status >= 404 && status < 422) {
                 return {
-                    message: '请求错误，请求资源不存在'
+                    message: '请求错误，请求资源不存在',
+                    code: status
                 };
             }
             return {
-                message: '请求错误'
+                message: '请求错误',
+                code: status
             };
         })
 }

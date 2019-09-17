@@ -15,7 +15,7 @@ export const getClassInfo = () => {
             }
             throw new Error(res.message);
         } catch(e) {
-            return Promise.reject(0);
+            return Promise.resolve(0);
         }
     }
 }
