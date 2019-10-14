@@ -2,12 +2,12 @@ const path = require('path');
 
 module.exports = {
     icon: path.join(__dirname, '../build_web/favicon.ico'),
-    width: 600,
-    minWidth: 600,
-    // maxWidth: 600,
-    height: 430,
-    minHeight: 430,
-    // maxHeight: 450,
+    width: 315,
+    minWidth: 315,
+    maxWidth: 315,
+    height: 360,
+    minHeight: 360,
+    maxHeight: 511,
     // resizable: false,
     title: '教育语音分析系统',
     center: true,
