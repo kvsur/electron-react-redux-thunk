@@ -1,24 +1,6 @@
-import { fetchClassSchedule, fetchClassInfo, classStart, classEnd } from '../serivces/lesson';
+import { fetchClassSchedule, classStart, classEnd } from '../serivces/lesson';
 import TYPES from '../constants/COMMON_ACTION_TYPES';
 import Bridge from '../utils/bridge';
-
-export const getClassInfo = () => {
-    return async dispatch => {
-        try {
-            const res = await fetchClassInfo();
-            if (res.code === 0) {
-                dispatch({
-                    type: TYPES.UPDATE_CLASS_INFO,
-                    payload: {...res.data},
-                });
-                return Promise.resolve(1);
-            }
-            throw new Error(res.message);
-        } catch(e) {
-            return Promise.resolve(0);
-        }
-    }
-}
 
 export const getSchedule = () => {
     return async dispatch => {

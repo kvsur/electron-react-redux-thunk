@@ -3,21 +3,13 @@
     flex-direction: column;
     position: relative;
     margin: 0 auto;
-    top: 50%;
-    -webkit-transform: translatey(-50%);
-    transform: translatey(-50%);
-    width: 330px;
-    height: 245px;
-    background-color: rgba(0, 0, 0, 0.41);
-    // border-bottom: 1px solid #e0e0e0;
-    // border-top: 1px solid #e0e0e0;
     box-sizing: border-box;
-    border-radius: 4px;
-    font-family: Microsoft YaHei Regular,Microsoft YaHei;
+    font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif;;
     font-weight: 400;
     font-style: normal;
     color: #666;
     line-height: 18px;
+    padding: 0 25px;
 
     .header {
         font-size: 16px;
@@ -28,14 +20,19 @@
 
     .body {
         flex: 1;
-        padding: 20px 40px 0 30px;
+        // padding: 20px 40px 0 30px;
     }
 
     .footer {
         > *:nth-child(1) {
-            height: 50px;
-            text-align: right;
-            padding: 5px 40px 0 0;
+            // height: 50px;
+            // text-align: right;
+            // padding: 5px 40px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            // height: 64px;
+            margin-top: 24px;
         }
     }
 }

@@ -5,8 +5,10 @@ import React, { Component } from 'react';
 import Bridge from '../../utils/bridge';
 import { Modal, Progress, message } from 'antd';
 import history from '../../router-dom/history';
+import { connect } from 'react-redux';
+import TYPES from '../../constants/COMMON_ACTION_TYPES';
 
-// @connect()
+@connect()
 class Updater extends Component {
   state = {
     showModal: false,
@@ -24,6 +26,7 @@ class Updater extends Component {
     Bridge.on('update-downloaded-choose', this.updateNow);
     Bridge.on('update-close', this.updateClose);
     Bridge.on('update-not-available', this.noNewVersion);
+    Bridge.on('update-not-available-only-version', this.updateGlobalVersion);
     Bridge.on('update-available-choose', this.updateAvailable);
     Bridge.on('service-tip', this.serviceTip);
     Bridge.on('service-log', this.serviceLog);
@@ -38,6 +41,7 @@ class Updater extends Component {
     Bridge.cancel('update-downloaded-choose', this.updateNow);
     Bridge.cancel('update-close', this.updateClose);
     Bridge.cancel('update-not-available', this.noNewVersion);
+    Bridge.cancel('update-not-available-only-version', this.updateGlobalVersion);
     Bridge.cancel('update-available-choose', this.updateAvailable);
     Bridge.cancel('service-tip', this.serviceTip);
     Bridge.cancel('service-log', this.serviceLog);
@@ -119,6 +123,16 @@ class Updater extends Component {
       cancelButtonProps: {
         size: 'small',
         type: 'default'
+      }
+    });
+  }
+
+  updateGlobalVersion = ({ version }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: TYPES.UPDATE_APP_VERSION,
+      payload: {
+        appVersion: version
       }
     });
   }

@@ -1,6 +1,7 @@
 import { auth } from '../serivces/login';
 import TYPES from '../constants/COMMON_ACTION_TYPES';
-import { getSchedule, getClassInfo } from './lesson';
+import { getSchedule } from './lesson';
+import { getClassInfo } from './global';
 
 export const login = ({ userAccount, password}) => {
     return async dispatch => {

@@ -22,25 +22,28 @@ const formItemLayout = {
 const Item = Form.Item;
 
 @Form.create()
-@connect(({ lesson }) => ({
+@connect(({ lesson, global }) => ({
     ...lesson,
+    classInfo: global.classInfo,
 }))
 class Lesson extends Component {
     timer = null;
 
     state = {
         loading: false,
+        showTimerInfo: true,
         time: NO_OPRATION_TIME,
     };
 
     componentWillMount() {
-        const { dispatch } = this.props;
-        dispatch({
-            type: TYPES.UPDATE_PAGE_TITLE,
-            payload: {
-                pageTitle: '科目选择',
-            }
-        });
+        Bridge.send('resize', 425);
+        // const { dispatch } = this.props;
+        // dispatch({
+        //     type: TYPES.UPDATE_PAGE_TITLE,
+        //     payload: {
+        //         pageTitle: '科目选择',
+        //     }
+        // });
     }
 
     componentDidMount() {
@@ -99,6 +102,9 @@ class Lesson extends Component {
 
     submit = e => {
         clearInterval(this.timer);
+        this.setState({
+            showTimerInfo: false,
+        });
         e.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
@@ -122,20 +128,20 @@ class Lesson extends Component {
                     if (currentSchedule) {
                         const { scheduleTimeId, milliesEndTime, milliesStartTime } = currentSchedule;
 
-                        this.classStart(milliesEndTime - now);
                         await dispatch(startClass({time: now, subjectId, userAccount, scheduleTimeId}));
                         console.log('----------------------上课日志输出----------------------');
                         console.log('上课实际时间：', new Date(now).toLocaleString('zh-CN', {hour12: false}));
                         console.log('上课对应作息表时间', new Date(milliesStartTime).toLocaleString('zh-CN', {hour12: false}));
                         console.log('下课时间：', new Date(milliesEndTime).toLocaleString('zh-CN', {hour12: false}));
                         console.log('作息表对应ID：', scheduleTimeId);
+                        this.classStart(milliesEndTime - now);
                         changeRoute = 1;
                     } else {
-                        throw new Error('操作失败，当前时间为非上课时间');
+                        throw new Error('当前非上课时间');
                     }
                 } catch (e) {
                     message.error(e.message || e);
-                } finally {
+                } finally { 
                     this.setState({
                         loading: false,
                     }, () => {
@@ -147,18 +153,18 @@ class Lesson extends Component {
     };
 
     render() {
-        const { form: { getFieldDecorator }, className, subjectList, subjectId } = this.props;
-        const { loading, time } = this.state;
+        const { form: { getFieldDecorator }, classInfo: { className }, subjectList, subjectId } = this.props;
+        const { loading, time, showTimerInfo } = this.state;
         const footer = (
             <div>
-                <Button type="default" onClick={this.back}>返回</Button>
-                <Button type="primary" onClick={this.submit} loading={loading} style={{ marginLeft: '20px' }}>开始上课</Button>
+                <span style={{cursor: 'pointer', color: 'rgba(24, 118, 255, 1)'}} onClick={this.back}>返回</span>
+                <Button type="primary" onClick={this.submit} loading={loading}>开始上课</Button>
             </div>
         );
         return (
             <Layout title="科目选择" footer={footer}>
                 <Form {...formItemLayout}>
-                    <Item required={false} label="班级">
+                    <Item required={false}>
                         {
                             getFieldDecorator('className', {
                                 rules: [{ required: true, message: '未选择班级' }],
@@ -168,7 +174,7 @@ class Lesson extends Component {
                             )
                         }
                     </Item>
-                    <Item required={false} label="科目">
+                    <Item required={false} style={{marginBottom: '4px'}}>
                         {
                             getFieldDecorator('subjectId', {
                                 rules: [{ required: true, message: '未选择科目' }],
@@ -187,7 +193,7 @@ class Lesson extends Component {
                             )
                         }
                     </Item>
-                    <span  style={{color: '#fff'}}>请选择科目，若无操作，课程记录将在{`${time}`}s 后自动开启。</span>
+                    {showTimerInfo ? <span style={{color: 'rgba(0, 0, 0, 0.45)'}}>请选择科目,若无操作,课程将在{time}s后开始</span> : null}
                 </Form>
             </Layout>
         )

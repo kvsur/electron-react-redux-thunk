@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Form, Button, Input, message, Icon } from 'antd';
+import { Form, Input, message, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
 import Bridge from '../../utils/bridge';
 import { login } from '../../thunk/login';
 import Layout from '../../components/Layout';
-import TYPES from '../../constants/COMMON_ACTION_TYPES';
+// import TYPES from '../../constants/COMMON_ACTION_TYPES';
+import btn_able from './btn_able';
+import btn_disable from './btn_disable';
+import { debounce } from 'lodash';
 
 const formItemLayout = {
     labelCol: {
@@ -24,18 +27,26 @@ const Item = Form.Item;
 @Form.create()
 @connect()
 class Login extends Component {
+    constructor(props) {
+        super(props);
+        this.loginChange = debounce(this.loginChange, 200);
+    }
+
     state = {
         loading: false,
+        password: '',
+        userAccount: '',
     };
 
     componentWillMount() {
-        const { dispatch } = this.props;
-        dispatch({
-            type: TYPES.UPDATE_PAGE_TITLE,
-            payload: {
-                pageTitle: '登录',
-            }
-        });
+        Bridge.send('resize', 360);
+        // const { dispatch } = this.props;
+        // dispatch({
+        //     type: TYPES.UPDATE_PAGE_TITLE,
+        //     payload: {
+        //         pageTitle: '登录',
+        //     }
+        // });
     }
 
     componentDidMount() {
@@ -48,6 +59,13 @@ class Login extends Component {
 
     initClass = () => {
         Bridge.send('init-class-response', 1);
+    }
+
+    loginChange(key, val) {
+        this.setState({
+            [key]: val
+        });
+        console.log({ a: 12 });
     }
 
     submit = e => {
@@ -80,12 +98,12 @@ class Login extends Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { loading } = this.state;
+        const { password, userAccount } = this.state;
+        const canLogin = !!(password && userAccount);
         return (
             <Layout
                 title="登录"
-                footer={<div><Button type="primary" onClick={this.submit} loading={loading} >登录</Button></div>}
-                style={{height: '200px'}}
+                footer={null}
             >
                 <Form {...formItemLayout}>
                     <Item required={false}>
@@ -93,7 +111,11 @@ class Login extends Component {
                             getFieldDecorator('userAccount', {
                                 rules: [{ required: true, message: '登录名为空' }],
                             })(
-                                <Input prefix={<Icon type="user" style={{color: '#fff'}} />} placeholder="请输入登录名" onPressEnter={this.submit} />
+                                <Input
+                                    placeholder="请输入登录名"
+                                    onPressEnter={this.submit}
+                                    onChange={e => {this.loginChange('userAccount', e.target.value)}}
+                                />
                             )
                         }
                     </Item>
@@ -102,7 +124,13 @@ class Login extends Component {
                             getFieldDecorator('password', {
                                 rules: [{ required: true, message: '密码为空' }],
                             })(
-                                <Input prefix={<Icon type="lock"  style={{color: '#fff'}} />} type="password" placeholder="请输入密码" onPressEnter={this.submit} />
+                                <Input
+                                    type="password"
+                                    placeholder="请输入密码"
+                                    onPressEnter={this.submit}
+                                    suffix={<Icon onClick={this.submit} component={canLogin ? btn_able : btn_disable} style={{cursor: canLogin ? 'pointer' : 'not-allowed'}} />}
+                                    onChange={e => {this.loginChange('password', e.target.value)}}
+                                />
                             )
                         }
                     </Item>

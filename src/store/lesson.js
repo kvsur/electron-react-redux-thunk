@@ -1,11 +1,11 @@
 export default {
     userAccount: '', 
-    className: '', 
+    // className: '', 
     userName: '', 
     subjectId: '',
-    classId: '', 
-    schoolId: '', 
-    deviceId: '', 
+    // classId: '', 
+    // schoolId: '', 
+    // deviceId: '', 
     subjectList: [],
     // new Date().toLocaleString('zh-CN', {hour12: false, day: '2-digit', month: '2-digit', year: 'numeric'})
     schedule: [],

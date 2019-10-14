@@ -4,11 +4,17 @@ export default function reducer(state, action) {
     const { type, payload } = action;
 
     switch(type) {
-        case TYPES.UPDATE_PAGE_TITLE: {
-            const { pageTitle } = payload;
+        // case TYPES.UPDATE_PAGE_TITLE: {
+        //     const { pageTitle } = payload;
+        //     return {
+        //         ...state,
+        //         pageTitle,
+        //     };
+        // }
+        case TYPES.UPDATE_CLASS_INFO: {
             return {
                 ...state,
-                pageTitle,
+                classInfo: {...payload}
             };
         }
         case TYPES.UPDATE_APP_VERSION: {
@@ -16,6 +22,13 @@ export default function reducer(state, action) {
             return {
                 ...state,
                 appVersion,
+            };
+        }
+        case TYPES.UPDATE_DEVICE_STATUS: {
+            const { deviceStatus } = payload;
+            return {
+                ...state,
+                deviceStatus,
             };
         }
         default: {

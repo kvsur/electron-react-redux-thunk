@@ -2,21 +2,23 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    height: 32px;
+    /* background: rgba(0, 0, 0, 0.7); */
+    /* color: #fff; */
+    // box-shadow: 0px 0px 9px #323835;
+    height: 48px;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
     -webkit-user-select: none;
     -webkit-app-region: drag;
-    box-shadow: 0px 0px 9px #323835;
 
     .title {
-        flex: 1;
+        flex: 1 1;
         display: flex;
         align-items: center;
         line-height: 32px;
         font-size: 14px;
-        // font-weight: bolder;
-        padding-left: 10px;
+        padding-left: 28px;
+        font-weight: 700;
 
         .icon {
             display: inline-block;
@@ -29,13 +31,16 @@
     }
 
     .btns {
-        width: 100px;
+        width: 48px;
         display: flex;
         justify-content: space-around;
         align-items: center;
         
         i {
             cursor: pointer;
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
             -webkit-app-region: no-drag;
         }
     }

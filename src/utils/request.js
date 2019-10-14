@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-fetch';
 import { stringify } from 'qs';
-import { notification } from 'antd';
+// import { notification } from 'antd';
 
 const BASE_API = 'http://127.0.0.1:8720/teaching';
-// const BASE_API = 'http://127.0.0.1:1024/teaching';
+// const BASE_API = 'http://10.0.33.13:8720/teaching';
 
 const codeMessage = {
     200: '服务器成功返回请求的数据。',
@@ -26,10 +26,10 @@ const codeMessage = {
 const checkStatus = response => {
     if (response.status >= 200 && response.status < 300) return response;
     const errorText = codeMessage[response.status] || response.statusText;
-    notification.error({
-        message: `请求错误 ${response.status}: ${response.url}`,
-        description: errorText,
-    });
+    // notification.error({
+    //     message: `请求错误 ${response.status}: ${response.url}`,
+    //     description: errorText,
+    // });
     const error = new Error(errorText);
     error.name = response.status;
     error.response = response;
@@ -89,7 +89,7 @@ export default function request(url, option) {
                 };
             }
             return {
-                message: '请求错误',
+                message: '网络异常，请检查网络连接',
                 code: status
             };
         })

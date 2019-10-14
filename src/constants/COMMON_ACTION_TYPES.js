@@ -18,11 +18,12 @@ const TYPES =  {
     UPDATE_SCHEDULE: Symbol(),
     UPDATE_SUBJECT_ID: Symbol(),
     UPDATE_USER_ACCOUNT: Symbol(),
-    UPDATE_CLASS_INFO: Symbol(),
     UPDATE_CURRENT_SCHEDULE: Symbol(),
 
     // global action
+    UPDATE_CLASS_INFO: Symbol(),
     UPDATE_PAGE_TITLE: Symbol(),
     UPDATE_APP_VERSION: Symbol(),
+    UPDATE_DEVICE_STATUS: Symbol(),
 };
 export default TYPES;

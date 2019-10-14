@@ -8,20 +8,13 @@ import { connect } from 'react-redux';
 import { Icon, message } from 'antd';
 
 import styles from './index.less';
-import max from '../../assets/max';
-import middle from '../../assets/middle';
-// import history from '../../router-dom/history';
 import Bridge from '../../utils/bridge';
 
 @connect(({global}) => ({
-    pageTitle: global.pageTitle,
-    version: global.appVersion,
+    className: global.classInfo.className,
+    deviceStatus: global.deviceStatus,
 }))
 class Header extends Component {
-    state = {
-        isMax: false,
-    };
-
     componentDidMount() {
         Bridge.on('tray-click', this.handleTrayClick);
         Bridge.on('win-max', this.processToggle);
@@ -49,15 +42,15 @@ class Header extends Component {
     };
 
     render() {
-        const { isMax } = this.state;
-        const { version } = this.props;
+        const { className, deviceStatus } = this.props;
+
+        const classNameNode = <span style={{fontWeight: 'normal'}}>{className ? ` - ${className}` : ''}</span>;
+        const deviceStatusNode = <span style={{fontWeight: 'normal'}}>{`(${deviceStatus})`}</span>
 
         return (
             <header className={styles['app-header']}>
-                <div className={styles.title}>教育语音{version ? `-${version}` : ''}</div>
+                <div className={styles.title}>教育语音{deviceStatus ? deviceStatusNode : classNameNode}</div>
                 <div className={styles.btns}>
-                    <Icon type="minus" onClick={() => {this.toggle('close')}} title="最小化窗口" />
-                    <Icon component={isMax ? middle : max} onClick={() => {this.toggle('max')}} title={isMax ? '' : '最大化窗口'} />
                     <Icon type="close" onClick={() => {this.toggle('close')}} title="关闭窗口" />
                 </div>
             </header>

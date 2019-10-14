@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 
 import history from '../../router-dom/history';
 import Layout from '../../components/Layout';
+import Timer from '../../components/Timer';
 import Bridge from '../../utils/bridge';
-import TYPES, { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
+import { NO_OPRATION_TIME } from '../../constants/COMMON_ACTION_TYPES';
 import { endClass } from '../../thunk/lesson';
 
 const formItemLayout = {
@@ -22,8 +23,9 @@ const formItemLayout = {
 const Item = Form.Item;
 
 @Form.create()
-@connect(({ lesson }) => ({
+@connect(({ lesson, global }) => ({
     ...lesson,
+    classInfo: global.classInfo,
 }))
 class Ending extends Component {
     timer = null;
@@ -38,13 +40,14 @@ class Ending extends Component {
     };
 
     componentWillMount() {
-        const { dispatch } = this.props;
-        dispatch({
-            type: TYPES.UPDATE_PAGE_TITLE,
-            payload: {
-                pageTitle: '下课',
-            }
-        });
+        Bridge.send('resize', 485);
+        // const { dispatch } = this.props;
+        // dispatch({
+        //     type: TYPES.UPDATE_PAGE_TITLE,
+        //     payload: {
+        //         pageTitle: '下课',
+        //     }
+        // });
     }
 
     componentDidMount() {
@@ -62,6 +65,7 @@ class Ending extends Component {
     }
 
     handleClassEnd = () => {
+        Bridge.send('resize', 511);
         this.setState({
             withinTime: false,
         });
@@ -88,6 +92,7 @@ class Ending extends Component {
 
     delay = () => {
         clearInterval(this.timer);
+        Bridge.send('resize', 485);
         this.setState({
             withinTime: true,
             showDelay: false,
@@ -154,26 +159,29 @@ class Ending extends Component {
 
     render() {
         // const { models, loading } = this.props;
-        const { form: { getFieldDecorator }, className, subjectId, subjectList } = this.props;
+        const { form: { getFieldDecorator }, classInfo: { className }, subjectId, subjectList } = this.props;
         const { loading, withinTime, time, showDelay } = this.state;
 
-        const delay = showDelay ? <Button type="default" onClick={this.delay}>延迟5分钟</Button> : null;
+        // const delay = showDelay ? <Button type="default" onClick={this.delay}>延迟5分钟</Button> : null;
+        const delay = showDelay ? <span style={{cursor: 'pointer', color: 'rgba(24, 118, 255, 1)'}} onClick={this.delay}>延迟5分钟</span> : null;
         
         const footer = (
             <div>
                 {
                     withinTime ?
-                        <Button type="default" onClick={this.justDoIt}>继续上课</Button>
+                        // <Button type="default" onClick={this.justDoIt}>继续上课</Button>
+                        <span style={{cursor: 'pointer', color: 'rgba(24, 118, 255, 1)'}} onClick={this.justDoIt}>继续上课</span>
                         :
                         delay
                 }
-                <Button type="primary" onClick={this.submit} loading={loading} style={{ marginLeft: '20px' }}>确认下课</Button>
+                <Button className="ant-btn-green" onClick={this.submit} loading={loading}>确认下课</Button>
             </div>
         );
         return (
-            <Layout title="下课" footer={footer} style={withinTime ? {height: '200px'} : {}}>
+            <Layout title="下课" footer={footer}>
                 <Form {...formItemLayout}>
-                    <Item required={false} label="班级">
+                    <Timer />
+                    <Item required={false}>
                         {
                             getFieldDecorator('userAccount', {
                                 rules: [{ required: true, message: '未选择班级' }],
@@ -183,7 +191,7 @@ class Ending extends Component {
                             )
                         }
                     </Item>
-                    <Item required={false} label="科目">
+                    <Item required={false}>
                         {
                             getFieldDecorator('password', {
                                 rules: [{ required: true, message: '未选择科目' }],
@@ -203,7 +211,7 @@ class Ending extends Component {
                         }
                     </Item>
                     {
-                        !withinTime ? <span style={{color: '#fff'}}>请确认下课，若无操作，录音将在{`${time}`}s 后自动关闭。</span> : null
+                        !withinTime ? <span style={{color: 'rgba(0, 0, 0, 0.45)'}}>请确认下课,若无操作,课程将在{time}s后结束</span> : null
                     }
                 </Form>
             </Layout>
