@@ -67,9 +67,10 @@ function updateHandle() {
 
     autoUpdater.on('update-not-available', function (info) {
         if (tipForFrontEnd) {
-            process_emiter('update-not-available', info);
+            process_emiter('update-not-available', {version: app.getVersion()});
             tipForFrontEnd = false;
         }
+        process_emiter('update-not-available-only-version', {version: app.getVersion()});
     });
 
     // Event for download progress 
@@ -131,6 +132,11 @@ async function createWindow() {
         process_emiter('win-max', false);
     });
 
+    ipcMain.on('resize', (_, height) => {
+        win.setSize(appConfig.width, height || 432, true);
+        // console.log(height)
+    });
+
     ipcMain.on('minus', e => {
         win.minimize();
         global.isAppHide = true;
@@ -158,19 +164,27 @@ async function createWindow() {
 
     tray = new Tray(path.join(__dirname, '../build_web/favicon.ico'));
     const contextMenu = Menu.buildFromTemplate([
+        // {
+        //     label: '重启服务[DEV]',
+        //     click: function () {
+        //         win.show();
+        //         restartJava({ servicePath, emitor: win.webContents, firstTime: 1 });
+        //     }
+        // },
+        // {
+        //     label: '开发工具[DEV]',
+        //     // icon: path.join(__dirname, './icons/udpate16.png'),
+        //     click: function () {
+        //         win.show();
+        //         win.webContents.openDevTools();
+        //     }
+        // },
         {
-            label: '重启服务[DEV]',
+            label: '设备授权',
+            icon: path.join(__dirname, './icons/code16.png'),
             click: function () {
                 win.show();
-                restartJava({ servicePath, emitor: win.webContents, firstTime: 1 });
-            }
-        },
-        {
-            label: '开发工具[DEV]',
-            // icon: path.join(__dirname, './icons/udpate16.png'),
-            click: function () {
-                win.show();
-                win.webContents.openDevTools();
+                process_emiter('do-authorize');
             }
         },
         {
