@@ -12,7 +12,7 @@ const router = require('./router');
 
 const App = new Express();
 
-const PORT = 1024;
+const PORT = 8720;
 
 App.use(cors({
     origin: '*',

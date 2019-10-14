@@ -53,11 +53,15 @@ router.post('/class/getInfo', (req, res) => {
     res.json({
         "code": 0,
         "message": "请求成功",
-        "data":{
-            "classId":"cvodsglkoert", 
-            "className":"四（1）班",  
-            "schoolId":"zjhz-xuejunxiaoxue", 
-            "deviceId":"134519998"
+        "data": {
+            "classId": "cvodsglkoert",  //当前教室的编号
+            "className": "四（1）班",  //当前教室的名称
+            "schoolId": "zjhz-xuejunxiaoxue",  //当前教室所在的学校编号
+            "deviceInfo": "mainboard-gsdhwhgioefhqwei_cpuid-ashfilukawehif",  //硬件信息(主板和cpu信息)
+            "deviceNo": "134519998",  //当前教室所在的电脑对应的设备号(通过硬件信息获取的MD5值)
+            "licenseId": "5d82f5e0be42ed6a8939af70", //授权码
+            "deviceName": "一楼第一间", //设备名称(别名，授权时用户输入)
+            "deviceStatus": false, //设备启用状态(true-启用 false-停用)
         }
     });
 });
@@ -81,7 +85,12 @@ router.post('/class/getClassSchedule', (req, res) => {
                 {
                     "scheduleTimeId": "3",
                     "classStartTime": "18:24",
-                    "classEndTime": "18:56"
+                    "classEndTime": "19:56"
+                },
+                {
+                    "scheduleTimeId": "4",
+                    "classStartTime": "14:00",
+                    "classEndTime": "18:01"
                 }
             ]
     });
@@ -104,6 +113,39 @@ router.post('/class/classEnd', (req, res) => {
         "code": 0,
         "message": "请求成功",
         data: null
+    });
+});
+
+router.get('/tool/ping', (req, res) => {
+    const datas = [
+        {
+            code: 0,
+            message: '',
+        },
+        {
+            code: -1,
+            message: '网络异常，请检测网络连接',
+        },
+    ];
+
+    const num = Math.floor(Math.random() * 2);
+
+    res.json(datas[0]);
+});
+
+router.post('/tool/deviceStatus', (req, res) => {
+    res.json({
+        code: 0,
+        message: '当前设备未授权'
+    });
+});
+
+router.post('/license/authorize', (req, res) => {
+    const { deviceName, licenseId } = req.body;
+    console.log({ deviceName, licenseId });
+    res.json({
+        code: 0,
+        message: '授权成功'
     });
 });
 
