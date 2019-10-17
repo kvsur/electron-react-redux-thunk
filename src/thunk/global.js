@@ -48,21 +48,17 @@ export const getDeviceStatus = () => {
     return async dispatch => {
         try {
             const res = await getDeviceStatusApi();
-           if (res.code === 0) {
+           if (res.code === 0 || res.code === -1) {
                 dispatch({
                     type: TYPES.UPDATE_DEVICE_STATUS,
                     payload: {
-                        deviceStatus: '',
+                        deviceStatus: !!res.code ? res.message : '',
                     },
                 });
-            } else if (res.code === -1) {
-                dispatch({
-                    type: TYPES.UPDATE_DEVICE_STATUS,
-                    payload: {
-                        deviceStatus: res.message,
-                    },
+                return Promise.resolve({
+                    ...res
                 });
-            } else {
+            }else {
                 throw new Error('');
             }
         } catch(e) {
@@ -72,8 +68,10 @@ export const getDeviceStatus = () => {
                     deviceStatus: '服务未就绪'
                 },
             });
-        } finally {
-            return Promise.resolve();
+            return Promise.resolve({
+                code: -1,
+                message: '服务未就绪'
+            });
         }
     }
 }

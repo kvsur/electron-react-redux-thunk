@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { notification, Icon } from 'antd';
-import { doPing, getDeviceStatus } from '../../thunk/global';
+import { doPing } from '../../thunk/global';
 
 const config = {
     top: 50,
@@ -30,7 +30,6 @@ class Ping extends PureComponent {
     doPing = async () => {
         const { dispatch } = this.props;
         try {
-            dispatch(getDeviceStatus());
             let res = await dispatch(doPing());
             res = res || {};
 

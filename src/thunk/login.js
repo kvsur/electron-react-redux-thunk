@@ -1,14 +1,18 @@
 import { auth } from '../serivces/login';
 import TYPES from '../constants/COMMON_ACTION_TYPES';
 import { getSchedule } from './lesson';
-import { getClassInfo } from './global';
+import { getClassInfo, getDeviceStatus } from './global';
 
 export const login = ({ userAccount, password}) => {
     return async dispatch => {
         // console.log(userAccount, password);
         try {
-            const serviceReady = await dispatch(getClassInfo());
-            if (!serviceReady) return Promise.reject('服务未就绪，请稍后再尝试');
+            // 首先对服务及其设备状态进行检测
+            const checkedRes = await dispatch(getDeviceStatus());
+            if (checkedRes.code !== 0) return Promise.reject(checkedRes.message);
+
+
+            await dispatch(getClassInfo());
             const res = await auth({ userAccount, password});
             if (res.code === 0) {
                 dispatch({
