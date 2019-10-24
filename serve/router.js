@@ -124,13 +124,13 @@ router.get('/tool/ping', (req, res) => {
         },
         {
             code: -1,
-            message: '网络异常，请检测网络连接',
+            message: '设备已停用',
         },
     ];
 
     const num = Math.floor(Math.random() * 2);
 
-    res.json(datas[0]);
+    res.json(datas[1]);
 });
 
 router.post('/tool/deviceStatus', (req, res) => {
