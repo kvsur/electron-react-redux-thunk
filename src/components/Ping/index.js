@@ -24,6 +24,11 @@ class Ping extends PureComponent {
     }
 
     componentWillUnmount() {
+        notification.open({
+            ...config,
+            duration: 0.1,
+            description: <span style={{ color: 'rgba(255, 91, 82, 1)' }}></span>,
+        });
         clearInterval(this.timer);
     }
 
@@ -33,7 +38,14 @@ class Ping extends PureComponent {
             let res = await dispatch(doPing());
             res = res || {};
 
-            if (res.code === 0) {
+            if (res.code === -1) {
+                this.errorShowing = true;
+                notification.open({
+                    ...config,
+                    onClose: () => {this.errorShowing = false},
+                    description: <span style={{ color: 'rgba(255, 91, 82, 1)' }}>{res.message}</span>,
+                });
+            } else {
                 if (this.errorShowing) {
                     this.errorShowing = false;
                     notification.open({
@@ -42,13 +54,6 @@ class Ping extends PureComponent {
                         description: <span style={{ color: 'rgba(255, 91, 82, 1)' }}></span>,
                     });
                 }
-            } else {
-                this.errorShowing = true;
-                notification.open({
-                    ...config,
-                    onClose: () => {this.errorShowing = false},
-                    description: <span style={{ color: 'rgba(255, 91, 82, 1)' }}>{res.message}</span>,
-                });
             }
         } catch (e) {
             // Do not need anything 

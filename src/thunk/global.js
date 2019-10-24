@@ -2,7 +2,7 @@ import { doPingApi, fetchClassInfo, getDeviceStatusApi, doAuthorizeApi } from '.
 import TYPES from '../constants/COMMON_ACTION_TYPES';
 
 export const doPing = () => {
-    return async _ => {
+    return async dispatch => {
         try {
             const res = await doPingApi();
             return Promise.resolve(res);
@@ -44,7 +44,7 @@ export const getClassInfo = () => {
     }
 }
 
-export const getDeviceStatus = () => {
+export const getDeviceStatus = (fromLoading=false) => {
     return async dispatch => {
         try {
             const res = await getDeviceStatusApi();
@@ -52,7 +52,8 @@ export const getDeviceStatus = () => {
                 dispatch({
                     type: TYPES.UPDATE_DEVICE_STATUS,
                     payload: {
-                        deviceStatus: !!res.code ? res.message : '',
+                        deviceStatus: !!res.code ? (fromLoading ? '' : res.message) : '',
+                        serviceReady: true,
                     },
                 });
                 return Promise.resolve({
@@ -65,12 +66,13 @@ export const getDeviceStatus = () => {
             dispatch({
                 type: TYPES.UPDATE_DEVICE_STATUS,
                 payload: {
-                    deviceStatus: '服务未就绪'
+                    deviceStatus: (fromLoading ? '' : '服务未就绪'),
+                    serviceReady: false,
                 },
             });
             return Promise.resolve({
                 code: -1,
-                message: '服务未就绪'
+                message: (fromLoading ? '' : '服务未就绪')
             });
         }
     }

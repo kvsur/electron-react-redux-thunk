@@ -3,4 +3,5 @@ export default {
     appVersion: '',
     classInfo: {},
     deviceStatus: '',
+    serviceReady: false,
 };

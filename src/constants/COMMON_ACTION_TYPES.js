@@ -22,7 +22,7 @@ const TYPES =  {
 
     // global action
     UPDATE_CLASS_INFO: Symbol(),
-    UPDATE_PAGE_TITLE: Symbol(),
+    UPDATE_PING_INFO: Symbol(),
     UPDATE_APP_VERSION: Symbol(),
     UPDATE_DEVICE_STATUS: Symbol(),
 };

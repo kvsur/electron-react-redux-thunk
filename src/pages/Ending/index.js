@@ -178,7 +178,7 @@ class Ending extends Component {
             </div>
         );
         return (
-            <Layout title="下课" footer={footer}>
+            <Layout title="下课" footer={footer} needPing>
                 <Form {...formItemLayout}>
                     <Timer />
                     <Item required={false}>

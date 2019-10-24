@@ -162,7 +162,7 @@ class Lesson extends Component {
             </div>
         );
         return (
-            <Layout title="科目选择" footer={footer}>
+            <Layout title="科目选择" footer={footer} needPing>
                 <Form {...formItemLayout}>
                     <Item required={false}>
                         {

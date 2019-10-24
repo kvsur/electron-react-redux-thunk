@@ -4,11 +4,11 @@ export default function reducer(state, action) {
     const { type, payload } = action;
 
     switch(type) {
-        // case TYPES.UPDATE_PAGE_TITLE: {
-        //     const { pageTitle } = payload;
+        // case TYPES.UPDATE_PING_INFO: {
+        //     const { serviceReady } = payload;
         //     return {
         //         ...state,
-        //         pageTitle,
+        //         serviceReady,
         //     };
         // }
         case TYPES.UPDATE_CLASS_INFO: {
@@ -25,10 +25,11 @@ export default function reducer(state, action) {
             };
         }
         case TYPES.UPDATE_DEVICE_STATUS: {
-            const { deviceStatus } = payload;
+            const { deviceStatus, serviceReady } = payload;
             return {
                 ...state,
                 deviceStatus,
+                serviceReady,
             };
         }
         default: {

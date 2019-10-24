@@ -33,7 +33,8 @@ class Updater extends Component {
     Bridge.on('version-info', this.showVersionInfo);
     Bridge.on('boot-choose', this.bootChoose);
     Bridge.send('check-update');
-    history.push('/login');
+    // history.push('/login');
+    history.push('/loading');
   }
 
   componentWillUnmount() {

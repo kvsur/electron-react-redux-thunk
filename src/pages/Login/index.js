@@ -10,6 +10,7 @@ import Layout from '../../components/Layout';
 import btn_able from './btn_able';
 import btn_disable from './btn_disable';
 import { debounce } from 'lodash';
+import Initial from '../../components/Initial';
 
 const formItemLayout = {
     labelCol: {
@@ -65,7 +66,6 @@ class Login extends Component {
         this.setState({
             [key]: val
         });
-        console.log({ a: 12 });
     }
 
     submit = e => {
@@ -105,6 +105,7 @@ class Login extends Component {
                 title="登录"
                 footer={null}
             >
+                <Initial />
                 <Form {...formItemLayout}>
                     <Item required={false}>
                         {
