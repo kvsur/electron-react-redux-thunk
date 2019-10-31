@@ -49,7 +49,7 @@ class Header extends Component {
 
         return (
             <header className={styles['app-header']}>
-                <div className={styles.title}>教育语音{deviceStatus ? deviceStatusNode : classNameNode}</div>
+                <div className={styles.title}>智能语音录课助手{deviceStatus ? deviceStatusNode : classNameNode}</div>
                 <div className={styles.btns}>
                     <Icon type="close" onClick={() => {this.toggle('close')}} title="关闭窗口" />
                 </div>

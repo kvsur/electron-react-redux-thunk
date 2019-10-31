@@ -9,7 +9,7 @@ module.exports = {
     minHeight: 360,
     maxHeight: 511,
     // resizable: false,
-    title: '教育语音分析系统',
+    title: '智能语音录课助手',
     center: true,
     titleBarStyle: 'hidden',
     zoomToPageWidth: true,

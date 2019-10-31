@@ -10,7 +10,7 @@ class CopyRight extends PureComponent {
     render() {
         const { version } = this.props;
         return (
-            <div className={styles.copyright}><span>{` © ${new Date().getFullYear().toString()} `}教育语音{version ? ` - ${version}` : ''}</span></div>
+            <div className={styles.copyright}><span>{` © ${new Date().getFullYear().toString()} `}智能语音录课助手{version ? ` - ${version}` : ''}</span></div>
         )
     }
 }

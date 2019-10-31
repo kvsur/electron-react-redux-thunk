@@ -79,7 +79,7 @@ class Updater extends Component {
       title: '版本信息',
       width: 235,
       content: (
-        <span>教育语音-{appVersion}</span>
+        <span>智能语音录课助手-{appVersion}</span>
       ),
       okText: '关闭',
       onOk: () => {

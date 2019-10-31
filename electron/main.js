@@ -286,7 +286,7 @@ async function createWindow() {
             }
         },
     ]);
-    tray.setToolTip('教育语音分析系统');
+    tray.setToolTip('智能语音录课助手');
     tray.setContextMenu(contextMenu);
 
     tray.on('click', () => {

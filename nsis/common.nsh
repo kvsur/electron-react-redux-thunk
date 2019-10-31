@@ -11,7 +11,7 @@ FileBufSize 64
 Name "${PRODUCT_NAME}"
 
 !define APP_EXECUTABLE_FILENAME "${PRODUCT_FILENAME}.exe"
-!define UNINSTALL_FILENAME "Uninstall ${PRODUCT_FILENAME}.exe"
+!define UNINSTALL_FILENAME "uninstall_${PRODUCT_FILENAME}.exe"
 
 !macro check64BitAndSetRegView
   # https://github.com/electron-userland/electron-builder/issues/2420
@@ -45,12 +45,12 @@ Name "${PRODUCT_NAME}"
   # old desktop shortcut (could exist or not since the user might has selected to delete it)
   ReadRegStr $oldShortcutName SHELL_CONTEXT "${INSTALL_REGISTRY_KEY}" ShortcutName
   ${if} $oldShortcutName == ""
-    StrCpy $oldShortcutName "${PRODUCT_FILENAME}"
+    StrCpy $oldShortcutName "智能语音录课助手"
   ${endIf}
   StrCpy $oldDesktopLink "$DESKTOP\$oldShortcutName.lnk"
 
   # new desktop shortcut (will be created/renamed in case of a fresh installation or if the user haven't deleted the initial one)
-  StrCpy $newDesktopLink "$DESKTOP\${SHORTCUT_NAME}.lnk"
+  StrCpy $newDesktopLink "$DESKTOP\智能语音录课助手.lnk"
 
   ReadRegStr $oldMenuDirectory SHELL_CONTEXT "${INSTALL_REGISTRY_KEY}" MenuDirectory
   ${if} $oldMenuDirectory == ""
@@ -61,9 +61,9 @@ Name "${PRODUCT_NAME}"
 
   # new menu shortcut (will be created/renamed in case of a fresh installation or if the user haven't deleted the initial one)
   !ifdef MENU_FILENAME
-    StrCpy $newStartMenuLink "$SMPROGRAMS\${MENU_FILENAME}\${SHORTCUT_NAME}.lnk"
+    StrCpy $newStartMenuLink "$SMPROGRAMS\${MENU_FILENAME}\智能语音录课助手.lnk"
   !else
-    StrCpy $newStartMenuLink "$SMPROGRAMS\${SHORTCUT_NAME}.lnk"
+    StrCpy $newStartMenuLink "$SMPROGRAMS\智能语音录课助手.lnk"
   !endif
 !macroend
 
